@@ -1,0 +1,24 @@
+{
+  "name": "web_project",
+  "version": "0.0.0",
+  "description": "Website for Web technology class. With Artemii Lazovskii, Paul-louis Rossignol",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Test command\"",
+    "startDb": "cd Database && docker-compose up -d && docker ps && cd ..",
+    "mongoShell": "docker exec -it dev_mongo bash",
+    "stopDb": "docker stop dev_mongo",
+    "rmDb": "cd Database && docker rm dev_mongo && sudo rm -r mongo-volume && cd .."
+    
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PaullouisRossignol/ProjetBackWeb.git"
+  },
+  "author": "Artemii Lazovskii, Paul-louis Rossignol",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PaullouisRossignol/ProjetBackWeb/issues"
+  },
+  "homepage": "https://github.com/PaullouisRossignol/ProjetBackWeb#readme"
+}
