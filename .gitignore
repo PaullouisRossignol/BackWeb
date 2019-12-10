@@ -1,0 +1,6 @@
+#npm 
+node_modules/
+#typescript build
+dist/
+#ignore db files
+Database/mongo-volume/
