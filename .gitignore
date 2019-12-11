@@ -6,3 +6,5 @@ dist/
 Database/mongo-volume/
 #mac
 .DS_Store
+#vim 
+*.swp
