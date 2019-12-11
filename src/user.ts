@@ -41,28 +41,40 @@ export class UserHandler {
   constructor(mgAccess: mongoAccess){
     this.mgAccess = mgAccess;
   }
-  public addUser(email: String, password: String, callback: (err: Error | null ) => void){
+  public addUser(email: String, password: String, callback: (err: Error | null, result?: User ) => void){
     //connect to mongo
     const mg = this.mgAccess
-    mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, (err, client) =>{
-      if (err){
-        console.log("Unable to connect to the server\nError log : "+err+"\n");
-      }
-      else
-      {
-        const db = client.db("project")
-        const collection = db.collection("users")
-          const newUser = {email: email, password: password}
-          collection.insertOne(newUser, (err) => {
-            if(err){
-              callback(err);
-            }
-            else
-              callback(null)
-          })
-      }
-      client.close()
+    let checkUser =  new Promise(function (success: any, reject: any){
+      mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, (err, client) =>{
+        if (err){
+          console.log("Unable to connect to the server\nError log : "+err+"\n");
+        }
+        else
+        {
+          const db = client.db("project")
+          const collection = db.collection("users")
+            const newUser = {email: email, password: password}
+            collection.insertOne(newUser, (err) => {
+              if(err){
+                callback(err)
+              }
+              else
+                success(true)
+            })
+        }
+        client.close()
+      })
     })
+    checkUser.then(()=>{
+      this.getUserByMail(email, (err, result)=>{
+        if(err) throw err
+        if(result)
+          callback(null, result)
+        else
+          callback(new Error("Problem returning the new user"))
+      })
+    }).catch(error => {console.log(error)})
+    
   }
   public getUsers(callback: (err: Error | null, result?: User[] | null) => void){
     //connect to mongo

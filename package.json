@@ -28,6 +28,8 @@
     "encoding-down": "^6.3.0",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
+    "jwt-simple": "^0.5.6",
+    "moment": "^2.24.0",
     "mongodb": "^3.3.5",
     "nodemon": "^2.0.1",
     "ts-node": "^8.5.4",

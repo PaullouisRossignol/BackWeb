@@ -3,11 +3,11 @@ import bodyparser = require('body-parser')
 import session = require('express-session')
 import path = require('path')
 import express = require('express')
-import user, {UserHandler} from './user'
+import {UserHandler} from './user'
 import mongoAccess from './mongoAccess'
-import { MetricsHandler, Metric } from './metrics'
-import { cpus } from 'os'
-import { request } from 'http'
+import { MetricsHandler } from './metrics'
+import jwt from 'jwt-simple'
+import moment from 'moment'
 
 const app = express();
 const port: string = process.env.PORT || '8080'
@@ -19,16 +19,46 @@ app.use(express.static(path.join(__dirname, '/../public')))
 //use bodyparser to parse requests
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded())
-
 //views path for response rendering
 app.set('views', __dirname + "/../views")
 app.set('view engine', 'ejs')
-
+//set the secret string for user authentification
+app.set('jwtTokenSecret', 'Kremlevka');
 
 app.get('/', (req: any, res: any)  =>{
   res.render('index', { name: 'Toto' })
 })
-
+app.post('/connectUser', (req: any, res: any)=>{
+  const {email, password} = req.body
+  if(email && password)
+  {
+    //check if the user is in the db and if his password correct
+    let checkUser =  new Promise(function (success: any, reject: any){
+      UserHd.getUserByMail(email, (err, result) =>{
+        if(err) reject(err)
+        if(!result)
+          res.status(404).send("This email does not exist")
+        else if(result.getPassword() !== password)
+          res.status(409).send("Wrong Password")
+        else
+        {
+          var expires = moment().add(1, 'h').valueOf();
+          var token = jwt.encode({
+            iss: result.id,
+            exp: expires
+          }, app.get('jwtTokenSecret'));
+          res.json({
+            token : token,
+            expires: expires,
+            user: result
+          });
+        }
+      })
+    })
+  }
+  else
+    res.status(400).send("Specify an email and a password")
+})
 app.get('/getUsers', (req: any, res: any)  =>{
     UserHd.getUsers((err: Error | null, result: any) => {
     if (err) throw err
@@ -65,7 +95,6 @@ app.get('/getUserById/:id', (req: any, res: any)  =>{
     res.status(400).send("Specify an id")
 })
 app.get('/getMetric/:id', (req: any, res: any)  =>{
-  
   if(req.params.id)
   {
     MetricHd.getMetric(req.params.id, (err: Error | null, result: any) => {
@@ -86,6 +115,17 @@ app.get('/getMetrics', (req: any, res: any)  =>{
     res.end()
    })
  })
+app.get('/getUserMetrics/:id', (req: any, res: any)  =>{
+  if(req.params.id)
+  {
+    MetricHd.getUserMetrics(req.params.id, (err: Error | null, result: any) => {
+      if (err) throw err
+      res.json(result)
+      //to give the response
+      res.end()
+     })
+  }
+ })
 app.post('/addUser/', (req: any, res: any)=>{
   const {email, password} = req.body
   if(email && password)
@@ -101,12 +141,26 @@ app.post('/addUser/', (req: any, res: any)=>{
         })
       })
       checkUser.then(()=>{
-        UserHd.addUser(email, password, (err) =>{
+        UserHd.addUser(email, password, (err, result) =>{
           if (err)
-            res.status(520).send("Erreur inconnu,\nError: " + err)
+            res.status(520).send("Erreur,\nError: " + err)
           else
-            res.status(200).send("User Created")
-          })
+          {
+            if(result)
+            {
+              var expires = moment().add(1, 'h').valueOf();
+              var token = jwt.encode({
+                iss: result.id,
+                exp: expires
+              }, app.get('jwtTokenSecret'));
+              res.json({
+                token : token,
+                expires: expires,
+                user: result
+              });
+            }
+          }
+        })
       }).catch(error => {console.log(error)})
   }
   else
@@ -118,7 +172,7 @@ app.post('/addMetric/', (req: any, res: any)=>{
   {
     MetricHd.addMetric(user_id, debt_to, amount, (err) =>{
       if (err) 
-        res.status(520).send("Erreur inconnu,\nError: " + err)
+        res.status(520).send("Erreur ,\n " + err)
       else
         res.status(200).end()
     })

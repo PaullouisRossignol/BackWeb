@@ -91,6 +91,38 @@ export class Metric {
         }
       })
     }
+    public getUserMetrics(id: string, callback: (err: Error | null, result?: Metric[] | null) => void){
+      //connect to mongo
+      const mg = this.mgAccess
+      mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, function(err, client){
+        if (err){
+          console.log("Unable to connect to the server\nError log : "+err+"\n");
+        }
+        else
+        {
+          //retrieve all data in Metrics collection that are user's metrics
+          const db = client.db("project")
+          const collection = db.collection("metrics")
+          collection.find({}).toArray(function(err: Error, result: any){
+            if(err){
+              callback(err, null);
+            }
+            else if(result.length){
+              let arrayMetrics: Metric[] = []
+              result.forEach(elem => {
+                if(elem.user_id == id)
+                 arrayMetrics.push(Metric.fromDb(elem._id, elem.user_id, elem.debt_to, elem.amount))     
+              })
+              callback(null, arrayMetrics)
+            }
+            else
+              callback(null, null);
+  
+          });
+          client.close();
+        }
+      })
+    }
     public getMetric(id: string, callback: (err: Error | null, result?: Metric | null) => void) {
       //connect to mongo
       const mg = this.mgAccess
