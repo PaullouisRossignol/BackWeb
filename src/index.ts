@@ -90,29 +90,24 @@ app.post('/addUser/', (req: any, res: any)=>{
   const {email, password} = req.body
   if(email && password)
     {
+      //check in this mail is not already associated to another account
       let checkUser =  new Promise(function (success: any, reject: any){
         UserHd.getUserByMail(email, (err, result) =>{
           if(err) reject(err)
           if(result)
-            success(false)
+            res.status(409).send("This email is already taken")
           else
             success(true)
         })
       })
-      checkUser.then((success)=>{
-        if(success)
-        {
+      checkUser.then(()=>{
         UserHd.addUser(email, password, (err) =>{
           if (err)
             res.status(520).send("Erreur inconnu,\nError: " + err)
           else
             res.status(200).send("User Created")
           })
-        }
-        //conflict http code
-        else
-          res.status(409).send("This email is already taken")
-      })
+      }).catch(error => {console.log(error)})
   }
   else
     res.status(400).send("Specify an email and a password")
@@ -122,8 +117,10 @@ app.post('/addMetric/', (req: any, res: any)=>{
   if(user_id && debt_to && amount)
   {
     MetricHd.addMetric(user_id, debt_to, amount, (err) =>{
-      if (err) throw err
-      res.status(200).end()
+      if (err) 
+        res.status(520).send("Erreur inconnu,\nError: " + err)
+      else
+        res.status(200).end()
     })
   }
   else
@@ -132,28 +129,24 @@ app.post('/addMetric/', (req: any, res: any)=>{
 app.post('/delUser/', (req: any, res: any)=>{
   const id = req.body.id
   if(id){
+        //check if the user exist
     let checkUser =  new Promise(function (success: any, reject: any){
       UserHd.getUserById(id, (err, result) =>{
         if(err) reject(err)
         if(result)
           success(true)
         else
-          success(false)
+          res.status(409).send("This User does not exist")
       })
-    })
-    checkUser.then((success)=>{
-      if(success)
-      {
+    })//delete in db
+    checkUser.then(()=>{
         UserHd.deleteUser(id, (err) =>{
-          if (err) throw err
-          res.status(200).end()
+          if (err)
+            res.status(520).send("Error: " + err)
+          else
+            res.status(200).end()
         })
-      }
-      //conflict http code
-      else
-        res.status(409).send("This email does not exist")
-  
-    })
+    }).catch(error => {console.log(error)})
   }
   else
     res.status(400).send("Specify an id")
@@ -162,10 +155,24 @@ app.post('/delMetric/', (req: any, res: any)=>{
   const id = req.body.id
   if(id)
   {
-    MetricHd.deleteMetric(id, (err) =>{
-      if (err) throw err
-      res.status(200).end()
-    })
+        //check if the Metric exist
+    let checkMetric =  new Promise(function (success: any, reject: any){
+      MetricHd.getMetric(id, (err, result) =>{
+        if(err) reject(err)
+        if(result)
+          success(true)
+        else
+          res.status(409).send("This Metric does not exist")
+      })
+    })//Delete in db
+    checkMetric.then(()=>{
+        MetricHd.deleteMetric(id, (err) =>{
+          if (err) 
+            res.status(520).send("Error: " + err)
+          else
+            res.status(200).end()
+        })
+    }).catch(error => {console.log(error)})
   }
   else
     res.status(400).send("Specify an id")
@@ -175,10 +182,37 @@ app.post('/upUser/', (req: any, res: any)=>{
   const {id, email, password} = req.body
   if(id && email && password)
   {
-    UserHd.updateUser(id, email, password, (err) =>{
-      if (err) throw err
-      res.status(200).end()
-    })
+    //check if the user exist
+    let checkUser =  new Promise(function (success: any, reject: any){
+    UserHd.getUserById(id, (err, result) =>{
+      if(err) reject(err)
+      if(result)
+        success(true)
+      else
+        res.status(409).send("This user does not exist")
+      })
+    })//check if the email we wan't to change is not already used
+    checkUser.then(():any =>{
+        UserHd.getUserByMail(email, (err, result) =>{
+          if(err)
+            res.status(520).send("Error: " + err)
+          if(result && result.id != id)
+          {
+            res.status(409).send("This mail already exists")
+          }
+          else
+          {
+            return checkUser
+          }
+        })//finally update the user
+    }).then(() => {
+        UserHd.updateUser(id, email, password, (err) =>{
+          if (err) 
+            res.status(520).send("Error: " + err)
+          else
+            res.status(200).end()
+        })
+    }).catch(error => {console.log(error)})
   }
   else
     res.status(400).send("Specify a id, email and an password")
@@ -187,10 +221,24 @@ app.post('/upMetric/', (req: any, res: any)=>{
   const {id, user_id, debt_to, amount} = req.body
   if(id && user_id && debt_to && amount)
   {
-    MetricHd.updateMetric(id, user_id, debt_to, amount, (err) =>{
-      if (err) throw err
-      res.status(200).end()
-    })
+    //check if the user exist
+    let checkUser =  new Promise(function (success: any, reject: any){
+      MetricHd.getMetric(id, (err, result) =>{
+        if(err) reject(err)
+        if(result)
+          success(true)
+        else
+          res.status(409).send("This Metric does not exist")
+        })
+    })//update in the db
+    checkUser.then(() => {
+      MetricHd.updateMetric(id, user_id, debt_to, amount, (err) =>{
+        if (err)
+          res.status(520).send("Error: " + err)
+        else
+          res.status(200).end()
+      })
+    }).catch(error => {console.log(error)})
   }
   else
     res.status(400).send("Specify an id, user_id, debt_to and an amount")
