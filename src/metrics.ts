@@ -37,6 +37,29 @@ export class Metric {
       this.mgAccess = mgAccess;
     }
 
+    public addMetric(user_id: String, debt_to: String, amount:number, callback: (err: Error | null ) => void){
+      //connect to mongo
+      const mg = this.mgAccess
+      mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, (err, client) =>{
+        if (err){
+          console.log("Unable to connect to the server\nError log : "+err+"\n");
+        }
+        else
+        {
+          const db = client.db("Project")
+          const collection = db.collection("metrics")
+          
+            const newMetric = {user_id: user_id, debt_to: debt_to, amount: amount}
+            collection.insertOne(newMetric, (err) => {
+              if(err)
+                callback(err);
+              else
+                callback(null)
+            })
+        }
+        client.close()
+      })
+    }
     public getMetrics(callback: (err: Error | null, result?: Metric[] | null) => void){
       //connect to mongo
       const mg = this.mgAccess
@@ -81,7 +104,6 @@ export class Metric {
           const db = client.db("Project")
           const collection = db.collection("metrics")
           const ObjectId = require('mongodb').ObjectId;
-          const o_id = new ObjectId(id)
           collection.findOne(ObjectId(id), function(err: Error, result: any){
             if(err){
               callback(err, null);
@@ -102,39 +124,53 @@ export class Metric {
         }
       })
     }
-
-    /*
-    public delete(key: number, callback: (error: Error | null, result: any) => void){
-        //message to display
-        let message : string 
-        message = "Unable to find your metric"
-        
-        //deliting a metric from the table
-        this.db.del( key , function(err){
-          if(err)	{
-            console.log('Unable to find your metric')
-            callback(err, message)
-          }else
-            console.log("no error")
-        })
-        //changing the message if delition was successfull
-        message = "metric with id "+ key+ " is deleted"
-        console.log("metric with id "+ key+ " is deleted")
-        //returning the message to display
-        callback(null, message)
-    }
-    public save(
-        key: number,
-        metrics: Metric[], 
-        callback: (error: Error | null) => void) {
-
-      const stream = WriteStream(this.db)
-        stream.on('error', callback)
-        stream.on('close', callback)
-        metrics.forEach((m: Metric) => {
-      stream.write({ key: `${key}:${m.timestamp}`, value: m.value })
+    public updateMetric( id: String, user_id: String, debt_to: String, amount:number, callback: (err: Error | null) => void){
+      //connect to mongo
+      const mg = this.mgAccess
+      mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, (err, client) =>{
+        if (err){
+          console.log("Unable to connect to the server\nError log : "+err+"\n");
+        }
+        else
+        {
+          const db = client.db("Project")
+          const collection = db.collection("metrics")
+          const ObjectId = require('mongodb').ObjectId;
+          const updateUser = {$set:{user_id: user_id, debt_to: debt_to, amount: amount}}
+          collection.updateOne({_id : ObjectId(id)}, updateUser, (err) => {
+              if(err){
+                callback(err);
+              }
+              else
+                callback(null);
+            })
+        }
+        client.close()
       })
-      stream.end()
     }
-    */
+    public deleteMetric(id: String, callback: (err: Error | null) => void) {
+      //connect to mongo
+      const mg = this.mgAccess
+      mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, function(err, client){
+        if (err){
+          console.log("Unable to connect to the server\nError log : "+err+"\n");
+        }
+        else
+        {
+          //find the user specified by its email in the db
+          const db = client.db("Project")
+          const collection = db.collection("metrics")
+          const ObjectId = require('mongodb').ObjectId;
+          collection.deleteOne({_id : ObjectId(id)}, function(err) {
+            if (err) 
+             callback(err)
+            else
+             callback(null)
+            client.close();
+          });
+        }
+     })
+   }
+
+
 }
