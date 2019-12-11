@@ -46,7 +46,7 @@ export class Metric {
         }
         else
         {
-          const db = client.db("Project")
+          const db = client.db("project")
           const collection = db.collection("metrics")
           
             const newMetric = {user_id: user_id, debt_to: debt_to, amount: amount}
@@ -69,8 +69,8 @@ export class Metric {
         }
         else
         {
-          //retrieve all data in Metrics collection of Project db and return them
-          const db = client.db("Project")
+          //retrieve all data in Metrics collection of project db and return them
+          const db = client.db("project")
           const collection = db.collection("metrics")
           collection.find({}).toArray(function(err: Error, result: any){
             if(err){
@@ -101,7 +101,7 @@ export class Metric {
         else
         {
           //find the Metric specified by its email in the db
-          const db = client.db("Project")
+          const db = client.db("project")
           const collection = db.collection("metrics")
           const ObjectId = require('mongodb').ObjectId;
           collection.findOne(ObjectId(id), function(err: Error, result: any){
@@ -133,7 +133,7 @@ export class Metric {
         }
         else
         {
-          const db = client.db("Project")
+          const db = client.db("project")
           const collection = db.collection("metrics")
           const ObjectId = require('mongodb').ObjectId;
           const updateUser = {$set:{user_id: user_id, debt_to: debt_to, amount: amount}}
@@ -158,7 +158,7 @@ export class Metric {
         else
         {
           //find the user specified by its email in the db
-          const db = client.db("Project")
+          const db = client.db("project")
           const collection = db.collection("metrics")
           const ObjectId = require('mongodb').ObjectId;
           collection.deleteOne({_id : ObjectId(id)}, function(err) {

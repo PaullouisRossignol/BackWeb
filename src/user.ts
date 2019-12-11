@@ -14,9 +14,9 @@ export default class User {
       this.setPassword(password)
     } else this.password = password
   }
-  static fromDb(id: String, email: String, pwd: any): User {
+  static fromDb(id: String, email: String, password: any): User {
     
-    return new User(id, email, pwd)
+    return new User(id, email, password)
   }
 
   public setPassword(toSet: String): void {
@@ -41,7 +41,7 @@ export class UserHandler {
   constructor(mgAccess: mongoAccess){
     this.mgAccess = mgAccess;
   }
-  public addUser(email: String, pwd: String, callback: (err: Error | null, result: Boolean ) => void){
+  public addUser(email: String, password: String, callback: (err: Error | null ) => void){
     //connect to mongo
     const mg = this.mgAccess
     mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, (err, client) =>{
@@ -50,30 +50,16 @@ export class UserHandler {
       }
       else
       {
-        const db = client.db("Project")
+        const db = client.db("project")
         const collection = db.collection("users")
-        /*let exist = {status : false}
-        this.getUser(email, (err, result) => {
-          if (err) throw err
-          console.log(result)
-          if(result)
-           exist.status = true
-          console.log(exist)
-        }).then()
-        console.log("jambon + "+exist)*/
-        if(/*!exist.status*/true)
-        {
-          const newUser = {email: email, pwd: pwd}
+          const newUser = {email: email, password: password}
           collection.insertOne(newUser, (err) => {
             if(err){
-              callback(err, false);
+              callback(err);
             }
             else
-              callback(null, true)
+              callback(null)
           })
-        }
-        else
-          callback(null, false)
       }
       client.close()
     })
@@ -87,8 +73,8 @@ export class UserHandler {
       }
       else
       {
-        //retrieve all data in users collection of Project db and return them
-        const db = client.db("Project")
+        //retrieve all data in users collection of project db and return them
+        const db = client.db("project")
         const collection = db.collection("users")
         collection.find({}).toArray(function(err: Error, result: any){
           if(err){
@@ -97,7 +83,7 @@ export class UserHandler {
           else if(result.length){
             let arrayUsers: User[] = []
             result.forEach(elem => {
-               arrayUsers.push(User.fromDb(elem._id, elem.email, elem.pwd))     
+               arrayUsers.push(User.fromDb(elem._id, elem.email, elem.password))     
             })
             callback(null, arrayUsers)
           }
@@ -109,7 +95,7 @@ export class UserHandler {
       }
     })
   }
-  public getUser(email: String, callback: (err: Error | null, result?: User | null) => void) {
+  public getUserByMail(email: String, callback: (err: Error | null, result?: User | null) => void) {
     //connect to mongo
     const mg = this.mgAccess
     mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, function(err, client){
@@ -119,7 +105,7 @@ export class UserHandler {
       else
       {
         //find the user specified by its email in the db
-        const db = client.db("Project")
+        const db = client.db("project")
         const collection = db.collection("users")
         const query = { email: email };
         collection.findOne(query, function(err: Error, result: any){
@@ -129,7 +115,7 @@ export class UserHandler {
           else if(result){
             if(result.email === email)
             {
-              callback(null, User.fromDb(result._id, result.email, result.pwd))
+              callback(null, User.fromDb(result._id, result.email, result.password))
             }
             else
               callback(null, null);
@@ -142,7 +128,40 @@ export class UserHandler {
       }
     })
   }
-  public updateUser( user_id: String, email: String, pwd: String, callback: (err: Error | null) => void){
+  public getUserById(id: String, callback: (err: Error | null, result?: User | null) => void) {
+    //connect to mongo
+    const mg = this.mgAccess
+    mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, function(err, client){
+      if (err){
+        console.log("Unable to connect to the server\nError log : "+err+"\n");
+      }
+      else
+      {
+        //find the user specified by its email in the db
+        const db = client.db("project")
+        const collection = db.collection("users")
+        const ObjectId = require('mongodb').ObjectId;
+        collection.findOne({_id: ObjectId(id)}, function(err: Error, result: any){
+          if(err){
+            callback(err, null);
+          }
+          else if(result){
+            if(result._id == id)
+            {
+              callback(null, User.fromDb(result._id, result.email, result.password))
+            }
+            else
+              callback(null, null);
+
+          }
+          else
+            callback(null, null);
+        });
+        client.close();
+      }
+    })
+  }
+  public updateUser( user_id: String, email: String, password: String, callback: (err: Error | null) => void){
     //connect to mongo
     const mg = this.mgAccess
     mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, (err, client) =>{
@@ -151,11 +170,11 @@ export class UserHandler {
       }
       else
       {
-        const db = client.db("Project")
+        const db = client.db("project")
         const collection = db.collection("users")
         const ObjectId = require('mongodb').ObjectId;
         const id = new ObjectId(user_id)
-        const updateUser = {$set:{email: email, pwd: pwd}}
+        const updateUser = {$set:{email: email, password: password}}
         collection.updateOne({_id : id}, updateUser, (err) => {
             if(err){
               callback(err);
@@ -177,7 +196,7 @@ export class UserHandler {
        else
        {
          //find the user specified by its email in the db
-         const db = client.db("Project")
+         const db = client.db("project")
          const collection = db.collection("users")
          const ObjectId = require('mongodb').ObjectId;
          collection.deleteOne({_id : ObjectId(user_id)}, function(err) {
