@@ -2,10 +2,10 @@
   "name": "web_project",
   "version": "0.0.0",
   "description": "Website for Web technology class. With Artemii Lazovskii, Paul-louis Rossignol",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Test command\"",
-    "start": "./node_modules/.bin/ts-node src/index.ts",
+    "start": "./node_modules/.bin/ts-node src/server.ts",
     "build": "./node_modules/.bin/tsc -p tsconfig.json",
     "startDb": "cd Database && docker-compose up -d && docker ps && cd ..",
     "mongoShell": "docker exec -it dev_mongo bash",
