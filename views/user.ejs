@@ -4,10 +4,10 @@
 		<% include partials/head %> 
 	</head>
  	<body class="container bg-1 d-flex justify-content-center">
-		 <script>console.log(Cookies.getJSON('user'));</script>	
 		<div class="row text-center">
 			<h1>Remember Your Money</h1>
 		</div>
+		<div class="modifBox" id="modifUserBox"></div>	
 		<div class="row steps-row">
 			<form>
 				<div class="row">
@@ -16,14 +16,14 @@
 						 <div class="form-group">
 							<label for="email">E-mail</label>
 							<input type="email" class="form-control" id="email" 
-							value="email_of_user@email.world">
+							placeholder="your email">
 						 </div>
 					</div>
 					<div class="col-sm-2 user-col">
-						<input type="submit" class="btn log-btn" value="Change">
+						<input type="submit" class="btn log-btn" id="changeEmail" value="Change">
 					</div>
 				</div>
-			<form>
+			</form>
 		</div>
 		<div class="row">
 			<form>
@@ -32,15 +32,16 @@
 					<div class="col-sm-4">
 						 <div class="form-group">
 							<label for="password">Password</label>
-							<input type="password" class="form-control" id="password" 
-							value="UserPassword1234!">
+							<input type="text" class="form-control" id="password" 
+							placeholder="your password">
 						 </div>
 					</div>
 					<div class="col-sm-2 user-col">
-						<input type="submit" class="btn log-btn" value="Change">
+						<input type="submit" class="btn log-btn" id="changePassword" value="Change">
 					</div>
 				</div>
-			<form>
+				<div class="errorBox" id="errorUserBox"></div>	
+			</form>
 		</div>
 		<div class="row pad-row">
 			<div class="col-sm-6">
@@ -63,4 +64,5 @@
 			</div>
 		</div>
 	</body>
+	<script src="/javascripts/userPage.js"></script>
 </html>

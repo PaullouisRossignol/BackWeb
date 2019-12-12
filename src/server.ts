@@ -29,7 +29,7 @@ app.set('jwtTokenSecret', 'Kremlevka');
 app.get('/', (req: any, res: any)  =>{
   res.render('index', { name: 'Toto' })
 })
-app.get('/user', (req: any, res: any)  =>{
+app.get('/userPage', (req: any, res: any)  =>{
   res.render('user', { name: 'Toto' })
 })
 
@@ -266,16 +266,27 @@ app.post('/upUser/', (req: any, res: any)=>{
           }
         })//finally update the user
     }).then(() => {
-        UserHd.updateUser(id, email, password, (err) =>{
+        UserHd.updateUser(id, email, password, (err, result) =>{
           if (err) 
             res.status(520).send("Error: " + err)
-          else
-            res.status(200).end()
+          else if(result)
+          {
+            var expires = moment().add(1, 'h').valueOf();
+            var token = jwt.encode({
+              iss: result.id,
+              exp: expires
+            }, app.get('jwtTokenSecret'));
+            res.json({
+              token : token,
+              expires: expires,
+              user: result
+            });
+          }
         })
     }).catch(error => {console.log(error)})
   }
   else
-    res.status(400).send("Specify a id, email and an password")
+    res.status(400).send("Specify a id, email and a password")
 })
 app.post('/upMetric/', (req: any, res: any)=>{
   const {id, user_id, debt_to, amount} = req.body

@@ -39,3 +39,14 @@ a {
 	padding-top: 1.85%;
 	padding-left: 7%;
 }
+
+.errorBox{
+	color: rgb(212, 146, 146);
+	font-size: 20px;
+	font-weight: bold;
+}
+.modifBox{
+	color: rgb(146, 212, 151);
+	font-size: 20px;
+	font-weight: bold;
+}
