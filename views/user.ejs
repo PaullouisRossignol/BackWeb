@@ -41,11 +41,13 @@
 				</div>
 			<form>
 		</div>
+ 		<script src="/javascripts/metricsDisplay.js"></script>
+
 		<div class="row pad-row">
 			<div class="col-sm-6">
 				<h1>Debts</h1>
 				<br>
-				<% include partials/debt%>
+				<div id="debts-container"></div>
 				<br>
 				<button class="btn log-btn">
 					Add Debt
@@ -54,7 +56,7 @@
 			<div class="col-sm-6">
 				<h1>Favors</h1>
 				<br>
-				<% include partials/favor%>
+				<div id="favors-container"></div>
 				<br>
 				<button class="btn log-btn">
 					Add Favor

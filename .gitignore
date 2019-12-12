@@ -8,3 +8,4 @@ Database/mongo-volume/
 .DS_Store
 #vim 
 *.swp
+*.swo
