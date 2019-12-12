@@ -25,6 +25,7 @@ app.set('view engine', 'ejs')
 //set the secret string for user authentification
 app.set('jwtTokenSecret', 'Kremlevka');
 
+//displayed pages
 app.get('/', (req: any, res: any)  =>{
   res.render('index', { name: 'Toto' })
 })
@@ -32,6 +33,7 @@ app.get('/user', (req: any, res: any)  =>{
   res.render('user', { name: 'Toto' })
 })
 
+//serverSide requests
 app.post('/connectUser', (req: any, res: any)=>{
   const {email, password} = req.body
   if(email && password)
@@ -40,7 +42,6 @@ app.post('/connectUser', (req: any, res: any)=>{
       UserHd.getUserByMail(email, (err, result) =>{
         if(err) 
           res.status(520).send("Erreur,\nError: " + err)
-        console.log(result)
         if(!result)
           res.status(404).send("This email does not exist")
         else if(result.getPassword() !== password)
