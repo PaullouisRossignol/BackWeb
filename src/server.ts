@@ -37,14 +37,15 @@ app.post('/connectUser', (req: any, res: any)=>{
   if(email && password)
   {
     //check if the user is in the db and if his password correct
-    let checkUser =  new Promise(function (success: any, reject: any){
       UserHd.getUserByMail(email, (err, result) =>{
-        if(err) reject(err)
+        if(err) 
+          res.status(520).send("Erreur,\nError: " + err)
+        console.log(result)
         if(!result)
           res.status(404).send("This email does not exist")
         else if(result.getPassword() !== password)
           res.status(409).send("Wrong Password")
-        else
+        else if (result && result.getPassword() === password)
         {
           var expires = moment().add(1, 'h').valueOf();
           var token = jwt.encode({
@@ -58,7 +59,7 @@ app.post('/connectUser', (req: any, res: any)=>{
           });
         }
       })
-    })
+   
   }
   else
     res.status(400).send("Specify an email and a password")
