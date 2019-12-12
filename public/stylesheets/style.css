@@ -26,6 +26,15 @@ a {
 	padding-top: 50px;
 }
 
+.pad-row {
+	padding-top: 5%;
+	padding-left: 12%;
+}
+
+.debt-fav-row {
+	padding-top:9.5%;
+}
+
 .user-col {
 	padding-top: 1.85%;
 	padding-left: 7%;
