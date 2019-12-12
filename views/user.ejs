@@ -3,9 +3,43 @@
 	<head>
 		<% include partials/head %> 
 	</head>
- 	<body class="container-fluid bg-1 text-center">
+ 	<body class="container bg-1 d-flex justify-content-center">
+		<div class="row text-center">
+			<h1>Remember Your Money</h1>
+		</div>
+		<div class="row steps-row">
+			<form>
+				<div class="row">
+					<div class="col-sm-3"></div>
+					<div class="col-sm-4">
+						 <div class="form-group">
+							<label for="email">E-mail</label>
+							<input type="email" class="form-control" id="email" 
+							value="email_of_user@email.world">
+						 </div>
+					</div>
+					<div class="col-sm-2 user-col">
+						<input type="submit" class="btn log-btn" value="Change">
+					</div>
+				</div>
+			<form>
+		</div>
 		<div class="row">
-			<h1>TEST</h1>
+			<form>
+				<div class="row">
+					<div class="col-sm-3"></div>
+					<div class="col-sm-4">
+						 <div class="form-group">
+							<label for="password">Password</label>
+							<input type="password" class="form-control" id="password" 
+							value="UserPassword1234!">
+						 </div>
+					</div>
+					<div class="col-sm-2 user-col">
+						<input type="submit" class="btn log-btn" value="Change">
+					</div>
+				</div>
+			<form>
 		</div>
 	</body>
 </html>

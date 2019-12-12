@@ -28,6 +28,10 @@ app.set('jwtTokenSecret', 'Kremlevka');
 app.get('/', (req: any, res: any)  =>{
   res.render('index', { name: 'Toto' })
 })
+app.get('/user', (req: any, res: any)  =>{
+  res.render('user', { name: 'Toto' })
+})
+
 app.post('/connectUser', (req: any, res: any)=>{
   const {email, password} = req.body
   if(email && password)
