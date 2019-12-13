@@ -1,5 +1,7 @@
+
 if(Cookies.get('user'))
 {
+    console.log(Cookies.get('user'))
     const user = Cookies.getJSON('user')
 
     $('#email').val(user.user.email)
@@ -17,7 +19,7 @@ else
 {
     if(Cookies.get("modifUser"))
         Cookies.remove("modifUser")
-    document.location.href('/')
+    document.location.href = '/'
 }
 
 $("#changeEmail").click((e) =>{
@@ -45,6 +47,19 @@ $("#changePassword").click((e) =>{
         UpdateUserAjax(arr)     
     }
 })
+$("#deleteUser").click((e) =>{
+    e.preventDefault()
+    var conf = confirm("Are you sure you want to delete your account ?\n            All your metrics will be deleted");
+    if (conf == true) {
+    userCookie = Cookies.getJSON("user")
+    console.log(userCookie)
+    DeleteUserAjax(userCookie)
+    }
+})
+$('#LogOut').click((e) =>{
+    Cookies.remove('user')
+    document.location.href = '/'
+})
 function UpdateUserAjax(arr){
     $.ajax({
         url : '/upUser',
@@ -62,6 +77,30 @@ function UpdateUserAjax(arr){
             $("#errorUserBox").html(data.responseText)
             if(Cookies.get("modifUser"))
                 Cookies.remove("modifUser")
+            if(data.responseText === "Access token has expired")
+            {
+                alert("You're session has expired, please reconnect")
+                Cookies.remove('user')
+                document.location.href = '/'
+            }
+            
+        }
+    })
+}
+function DeleteUserAjax(arr)
+{
+    $.ajax({
+        url : '/delUser',
+        type : 'POST', 
+        data : JSON.stringify(arr),
+        contentType: 'application/json; charset=utf-8',
+        async: true,
+        success: function() {
+            Cookies.remove('user')
+            document.location.href = '/'
+        },
+        error: function(data, error, status){
+            $("#errorUserBox").html(data.responseText +" " +error +" "+ status)
             if(data.responseText === "Access token has expired")
             {
                 alert("You're session has expired, please reconnect")

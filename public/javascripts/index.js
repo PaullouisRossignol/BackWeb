@@ -41,7 +41,7 @@ $("#register").click((e) =>{
             async: true,
             success: function(data) {
                 Cookies.set('user', JSON.stringify(data))
-                document.location.href = "/user";
+                document.location.href = "/userPage";
             },
             error: function(data){
                 $("#errorRegisterBox").html(data.responseText)
