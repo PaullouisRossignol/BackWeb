@@ -2,7 +2,7 @@ $(function() {
     console.log( "ready!" );
 
 	$.ajax({
-		url: "/getUserMetrics/5df25e72be50a38010405e3f",
+		url: "/getUserMetrics/5df25e72be50a38010405e40",
         method: "GET",
         dataType: 'json',
         success: function(data) {
@@ -16,7 +16,7 @@ $(function() {
 						'<div class="row">'+
 							'<div class="col-sm-6">'+
 								'<div class="form-group">'+
-										'<label for="deb_user">User having my debt:</label>'+
+										'<label for="deb_user">Debt to:</label>'+
 										'<input type="text" class="form-control" id="debt_user"'+ 
 										'value="'+ 
 										item.debt_to +
