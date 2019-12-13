@@ -1,3 +1,7 @@
+if(Cookies.get('user'))
+    document.location.href = '/userPage'
+
+
 //jquery login 
 $("#Sign-In").click((e) =>{
     e.preventDefault()

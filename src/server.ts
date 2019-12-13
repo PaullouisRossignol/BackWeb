@@ -5,7 +5,7 @@ import path = require('path')
 import express = require('express')
 import {UserHandler} from './user'
 import mongoAccess from './mongoAccess'
-import Metric, { MetricsHandler } from './metrics'
+import { MetricsHandler } from './metrics'
 import jwt from 'jwt-simple'
 import moment from 'moment'
 
@@ -32,7 +32,6 @@ app.get('/', (req: any, res: any)  =>{
 app.get('/userPage', (req: any, res: any)  =>{
   res.render('user', { name: 'Toto' })
 })
-
 //serverSide requests
 app.post('/connectUser', (req: any, res: any)=>{
   
@@ -64,7 +63,7 @@ app.get('/getUsers', (req: any, res: any)  =>{
     res.end()
    })
  })
- {
+{
  /*
   app.get('/getUserByMail/:email', (req: any, res: any)  =>{
     if(req.params.email)
@@ -106,6 +105,21 @@ app.get('/getUsers', (req: any, res: any)  =>{
     else
       res.status(400).send("Specify an id")
   })
+
+  app.post('/delUserMetrics/', (req: any, res: any)=>{
+  const {id} = req.body
+  if(id)
+  {
+    MetricHd.deleteUserMetrics(id, (err) =>{
+      if (err) 
+        res.status(520).send("Erreur ,\n " + err)
+      else
+        res.status(200).end()
+    })
+  }
+  else
+    res.status(400).send("Specify an id")
+})
 */
 app.get('/getMetrics', (req: any, res: any)  =>{
   MetricHd.getMetrics((err: Error | null, result: any) => {
@@ -163,33 +177,34 @@ app.post('/addUser/', (req: any, res: any)=>{
   else
     res.status(400).send("Specify an email and a password")
 })
-app.post('/delUserMetrics/', (req: any, res: any)=>{
-  const {id} = req.body
-  if(id)
-  {
-    MetricHd.deleteUserMetrics(id, (err) =>{
-      if (err) 
-        res.status(520).send("Erreur ,\n " + err)
-      else
-        res.status(200).end()
-    })
-  }
-  else
-    res.status(400).send("Specify an id")
-})
 app.post('/addMetric/', (req: any, res: any)=>{
-  const {user_id, debt_to, amount} = req.body
-  if(user_id && debt_to && amount)
+  var {token, user_id, debt_to, amount} = req.body
+  if(token)
   {
-    MetricHd.addMetric(user_id, debt_to, amount, (err) =>{
-      if (err) 
-        res.status(520).send("Erreur ,\n " + err)
-      else
-        res.status(200).end()
-    })
+    try{
+      token = checkToken(token)
+      if(token)
+      {
+        console.log(req.body)
+        if(user_id && debt_to && amount)
+        {
+          MetricHd.addMetric(user_id, debt_to, amount, (err) =>{
+            if (err) 
+              res.status(520).send("Erreur ,\n " + err)
+            else
+              res.status(200).end()
+          })
+        }
+        else
+          res.status(400).send("Specify a reminder and an amount")
+      }
+    }
+    catch(err){
+      res.status(403).send("Token authentification failed\nError: "+err)
+    }
   }
   else
-    res.status(400).send("Specify a user_id, debt_to and an amount")
+      res.end('Access token has expired', 400);
 })
 app.post('/delUser/', (req: any, res: any)=>{
   if(req.body.user)

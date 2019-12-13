@@ -1,9 +1,7 @@
-
+ 
 if(Cookies.get('user'))
 {
-    console.log(Cookies.get('user'))
     const user = Cookies.getJSON('user')
-
     $('#email').val(user.user.email)
     $('#password').val(user.user.password)
     if(Cookies.get("modifUser"))
@@ -14,6 +12,7 @@ if(Cookies.get('user'))
         },4000)
         Cookies.remove("modifUser")
     }
+    displayMetrics()
 }
 else
 {
@@ -100,7 +99,7 @@ function DeleteUserAjax(arr)
             document.location.href = '/'
         },
         error: function(data, error, status){
-            $("#errorUserBox").html(data.responseText +" " +error +" "+ status)
+            $("#errorUserBox").html(data.responseText )
             if(data.responseText === "Access token has expired")
             {
                 alert("You're session has expired, please reconnect")

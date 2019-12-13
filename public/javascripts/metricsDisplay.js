@@ -1,12 +1,11 @@
-$(function() {
-    console.log( "ready!" );
-
+function displayMetrics() {
+	id = Cookies.getJSON('user').user.id
+	const url = "/getUserMetrics/"+id
 	$.ajax({
-		url: "/getUserMetrics/5df25e72be50a38010405e40",
+		url: url,
         method: "GET",
         dataType: 'json',
         success: function(data) {
-			console.log(typeof(data));
 			var debts_to_append = '';
 			var favors_to_append = '';
          	
@@ -16,12 +15,12 @@ $(function() {
 						'<div class="row">'+
 							'<div class="col-sm-6">'+
 								'<div class="form-group">'+
-										'<label for="deb_user">Debt to:</label>'+
+										'<label for="deb_user">reminder:</label>'+
 										'<input type="text" class="form-control" id="debt_user"'+ 
 										'value="'+ 
 										item.debt_to +
 										'">'+
-										'<label for="debt_amount">Debt Amount (in $):</label>'+
+										'<label for="debt_amount"> Amount in $:</label>'+
 										'<input type="number" class="form-control" id="debt_amount"'+ 
 										'value="'+
 										item.amount  +
@@ -46,12 +45,12 @@ $(function() {
 						'<div class="row">'+
 							'<div class="col-sm-6">'+
 								'<div class="form-group">'+
-										'<label for="favor_user">User having my favor:</label>'+
+										'<label for="favor_user">reminder:</label>'+
 										'<input type="text" class="form-control" id="favor_user"'+ 
 										'value="'+ 
 										item.debt_to +
 										'">'+
-										'<label for="favor_amount">Favor Amount (in $):</label>'+
+										'<label for="favor_amount"> Amount in $:</label>'+
 										'<input type="number" class="form-control" id="favor_amount"'+ 
 										'value="'+
 										item.amount  +
@@ -76,8 +75,8 @@ $(function() {
           	$("#favors-container").html(favors_to_append);
 		},
 		error: function(){
-			concole.log(data);
+			concole.log("Error: "+data);
 		}
 	});
-});
+}
 
