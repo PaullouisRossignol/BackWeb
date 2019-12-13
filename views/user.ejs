@@ -43,25 +43,37 @@
 				<div class="errorBox" id="errorUserBox"></div>	
 			</form>
 		</div>
-		<div class="row pad-row">
+ 		<script src="/javascripts/metricsDisplay.js"></script>
+
+		<div class="row pad-row bg-2">
 			<div class="col-sm-6">
 				<h1>Debts</h1>
 				<br>
-				<% include partials/debt%>
+				<div id="debts-container"></div>
 				<br>
-				<button class="btn log-btn">
+				<button class="btn log-btn adder">
 					Add Debt
 				</button>
 			</div>
 			<div class="col-sm-6">
 				<h1>Favors</h1>
 				<br>
-				<% include partials/favor%>
+				<div id="favors-container"></div>
 				<br>
-				<button class="btn log-btn">
+				<button class="btn log-btn adder">
 					Add Favor
 				</button>
 			</div>
+		</div>
+		<script src="/javascripts/addWindowDisplay.js"></script>
+		<div class="row pad-row bg-2">
+			<div class="col-sm-3"></div>
+			<div class="col-sm-6">
+				<br>
+				<div class="" id="add-new-container"></div>
+				<br>
+			</div>
+			<div class="col-sm-2 "></div>
 		</div>
 	</body>
 	<script src="/javascripts/userPage.js"></script>
