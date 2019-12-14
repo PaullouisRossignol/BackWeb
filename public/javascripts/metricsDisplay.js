@@ -13,6 +13,7 @@ $(function() {
 			$.each(data, function(i, item) {
 				if(item.amount < 0){
 					debts_to_append +='<form>'+
+						'<input type="hidden" id="metricId" name="metricId" value="'+item.id+'">'+
 						'<div class="row">'+
 							'<div class="col-sm-6">'+
 								'<div class="form-group">'+
@@ -33,26 +34,28 @@ $(function() {
 									'<input type="submit" class="btn log-btn" value="Change">'+
 								'</div>'+
 								'<div class="row debt-fav-row">'+
-									'<button class="btn log-btn">'+
+									'<button class="btn log-btn deleter">'+
 										'Close Debt'+
 									'</button>'+
 								'</div>'+
 							'</div>'+
 						'</div>'+
-					'</form>';
+					'</form>'+
+						'<script src="/javascripts/deleteMetric.js"></script>';
 				}
 				else {
 					favors_to_append +='<form>'+
+						'<input type="hidden"  name="metricId" value="'+item.id+'">'+
 						'<div class="row">'+
 							'<div class="col-sm-6">'+
 								'<div class="form-group">'+
 										'<label for="favor_user">User having my favor:</label>'+
-										'<input type="text" class="form-control" id="favor_user"'+ 
+										'<input type="text" class="form-control" name="favor_user"'+ 
 										'value="'+ 
 										item.debt_to +
 										'">'+
 										'<label for="favor_amount">Favor Amount (in $):</label>'+
-										'<input type="number" class="form-control" id="favor_amount"'+ 
+										'<input type="number" class="form-control" name="favor_amount"'+ 
 										'value="'+
 										item.amount  +
 										'">'+
@@ -63,13 +66,14 @@ $(function() {
 									'<input type="submit" class="btn log-btn" value="Change">'+
 								'</div>'+
 								'<div class="row debt-fav-row">'+
-									'<button class="btn log-btn">'+
+									'<button class="btn log-btn deleter">'+
 										'Close Debt'+
 									'</button>'+
 								'</div>'+
 							'</div>'+
 						'</div>'+
-					'</form>';
+					'</form>'+
+						'<script src="/javascripts/deleteMetric.js"></script>';
 				}
          	 });
           	$("#debts-container").html(debts_to_append);
