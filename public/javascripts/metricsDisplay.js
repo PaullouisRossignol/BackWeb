@@ -1,12 +1,11 @@
-$(function() {
-    console.log( "ready!" );
-
+function displayMetrics() {
+	id = Cookies.getJSON('user').user.id
+	const url = "/getUserMetrics/"+id
 	$.ajax({
-		url: "/getUserMetrics/5df25e72be50a38010405e40",
+		url: url,
         method: "GET",
         dataType: 'json',
         success: function(data) {
-			console.log(typeof(data));
 			var debts_to_append = '';
 			var favors_to_append = '';
          	
@@ -82,8 +81,8 @@ $(function() {
           	$("#favors-container").html(favors_to_append);
 		},
 		error: function(){
-			concole.log(data);
+			concole.log("Error: "+data);
 		}
 	});
-});
+}
 

@@ -25,14 +25,16 @@ app.set('view engine', 'ejs')
 //set the secret string for user authentification
 app.set('jwtTokenSecret', 'Kremlevka');
 
+//displayed pages
 app.get('/', (req: any, res: any)  =>{
   res.render('index', { name: 'Toto' })
 })
-app.get('/user', (req: any, res: any)  =>{
+app.get('/userPage', (req: any, res: any)  =>{
   res.render('user', { name: 'Toto' })
 })
-
+//serverSide requests
 app.post('/connectUser', (req: any, res: any)=>{
+  
   const {email, password} = req.body
   if(email && password)
   {
@@ -40,26 +42,15 @@ app.post('/connectUser', (req: any, res: any)=>{
       UserHd.getUserByMail(email, (err, result) =>{
         if(err) 
           res.status(520).send("Erreur,\nError: " + err)
-        console.log(result)
         if(!result)
           res.status(404).send("This email does not exist")
         else if(result.getPassword() !== password)
           res.status(409).send("Wrong Password")
         else if (result && result.getPassword() === password)
         {
-          var expires = moment().add(1, 'h').valueOf();
-          var token = jwt.encode({
-            iss: result.id,
-            exp: expires
-          }, app.get('jwtTokenSecret'));
-          res.json({
-            token : token,
-            expires: expires,
-            user: result
-          });
+            res.json(createToken(result));
         }
       })
-   
   }
   else
     res.status(400).send("Specify an email and a password")
@@ -72,46 +63,64 @@ app.get('/getUsers', (req: any, res: any)  =>{
     res.end()
    })
  })
-app.get('/getUserByMail/:email', (req: any, res: any)  =>{
-  if(req.params.email)
-  {
-    UserHd.getUserByMail(req.params.email, (err: Error | null, result: any) => {
+{
+ /*
+  app.get('/getUserByMail/:email', (req: any, res: any)  =>{
+    if(req.params.email)
+    {
+      UserHd.getUserByMail(req.params.email, (err: Error | null, result: any) => {
+        if (err) throw err
+        res.json(result)
+        //to give the response
+        res.end()
+      })
+    }
+    else
+      res.status(400).send("Specify an email")
+    
+  })
+  app.get('/getUserById/:id', (req: any, res: any)  =>{
+    if(req.params.id)
+    {
+      UserHd.getUserById(req.params.id, (err: Error | null, result: any) => {
       if (err) throw err
       res.json(result)
       //to give the response
       res.end()
-     })
-  }
-  else
-    res.status(400).send("Specify an email")
-  
-})
-app.get('/getUserById/:id', (req: any, res: any)  =>{
-  if(req.params.id)
+      })
+    }
+    else
+      res.status(400).send("Specify an id")
+  })
+  app.get('/getMetric/:id', (req: any, res: any)  =>{
+    if(req.params.id)
+    {
+      MetricHd.getMetric(req.params.id, (err: Error | null, result: any) => {
+      if (err) throw err
+      res.json(result)
+      //to give the response
+      res.end()
+      })
+    }
+    else
+      res.status(400).send("Specify an id")
+  })
+
+  app.post('/delUserMetrics/', (req: any, res: any)=>{
+  const {id} = req.body
+  if(id)
   {
-    UserHd.getUserById(req.params.id, (err: Error | null, result: any) => {
-    if (err) throw err
-    res.json(result)
-    //to give the response
-    res.end()
+    MetricHd.deleteUserMetrics(id, (err) =>{
+      if (err) 
+        res.status(520).send("Erreur ,\n " + err)
+      else
+        res.status(200).end()
     })
   }
   else
     res.status(400).send("Specify an id")
 })
-app.get('/getMetric/:id', (req: any, res: any)  =>{
-  if(req.params.id)
-  {
-    MetricHd.getMetric(req.params.id, (err: Error | null, result: any) => {
-    if (err) throw err
-    res.json(result)
-    //to give the response
-    res.end()
-    })
-  }
-  else
-    res.status(400).send("Specify an id")
-})
+*/
 app.get('/getMetrics', (req: any, res: any)  =>{
   MetricHd.getMetrics((err: Error | null, result: any) => {
     if (err) throw err
@@ -120,6 +129,8 @@ app.get('/getMetrics', (req: any, res: any)  =>{
     res.end()
    })
  })
+ 
+}
 app.get('/getUserMetrics/:id', (req: any, res: any)  =>{
   if(req.params.id)
   {
@@ -130,6 +141,10 @@ app.get('/getUserMetrics/:id', (req: any, res: any)  =>{
       res.end()
      })
   }
+  else
+    res.status(400).send("Specify an id")
+
+
  })
 app.post('/addUser/', (req: any, res: any)=>{
   const {email, password} = req.body
@@ -153,62 +168,91 @@ app.post('/addUser/', (req: any, res: any)=>{
           {
             if(result)
             {
-              var expires = moment().add(1, 'h').valueOf();
-              var token = jwt.encode({
-                iss: result.id,
-                exp: expires
-              }, app.get('jwtTokenSecret'));
-              res.json({
-                token : token,
-                expires: expires,
-                user: result
-              });
+              res.json(createToken(result));
             }
           }
         })
-      }).catch(error => {console.log(error)})
+      }).catch(error => {res.status(409).send(error)})
   }
   else
     res.status(400).send("Specify an email and a password")
 })
 app.post('/addMetric/', (req: any, res: any)=>{
-  const {user_id, debt_to, amount} = req.body
-  if(user_id && debt_to && amount)
+  var {token, user_id, debt_to, amount} = req.body
+  if(token)
   {
-    MetricHd.addMetric(user_id, debt_to, amount, (err) =>{
-      if (err) 
-        res.status(520).send("Erreur ,\n " + err)
-      else
-        res.status(200).end()
-    })
+    try{
+      token = checkToken(token)
+      if(token)
+      {
+        console.log(req.body)
+        if(user_id && debt_to && amount)
+        {
+          MetricHd.addMetric(user_id, debt_to, amount, (err) =>{
+            if (err) 
+              res.status(520).send("Erreur ,\n " + err)
+            else
+              res.status(200).end()
+          })
+        }
+        else
+          res.status(400).send("Specify a reminder and an amount")
+      }
+    }
+    catch(err){
+      res.status(403).send("Token authentification failed\nError: "+err)
+    }
   }
   else
-    res.status(400).send("Specify a user_id, debt_to and an amount")
+      res.end('Access token has expired', 400);
 })
 app.post('/delUser/', (req: any, res: any)=>{
-  const id = req.body.id
-  if(id){
-        //check if the user exist
-    let checkUser =  new Promise(function (success: any, reject: any){
-      UserHd.getUserById(id, (err, result) =>{
-        if(err) reject(err)
-        if(result)
-          success(true)
+  if(req.body.user)
+  {
+    const id = req.body.user.id
+    var token = req.body.token
+    try{
+      token = checkToken(token)
+      if(token)
+      {
+        if(id){
+              //check if the user exist
+          let checkUser =  new Promise(function (success: any, reject: any){
+            UserHd.getUserById(id, (err, result) =>{
+              if(err) reject(err)
+              if(result)
+                success(true)
+              else
+                res.status(409).send("This User does not exist")
+            })
+          })//delete in db
+          checkUser.then(()=>{
+              UserHd.deleteUser(id, (err) =>{
+                if (err)
+                  res.status(520).send("Error: " + err)
+              })
+              MetricHd.deleteUserMetrics(id, (err) =>{
+                if (err)
+                    res.status(520).send("Error: " + err)
+              })
+                
+              res.status(200).end()
+          }).catch(error => {res.status(409).send(error)})
+        }
         else
-          res.status(409).send("This User does not exist")
-      })
-    })//delete in db
-    checkUser.then(()=>{
-        UserHd.deleteUser(id, (err) =>{
-          if (err)
-            res.status(520).send("Error: " + err)
-          else
-            res.status(200).end()
-        })
-    }).catch(error => {console.log(error)})
+          res.status(400).send("Specify an id")
+      }
+      else
+        res.end('Access token has expired', 400);
+    }
+    catch(err){
+      res.status(403).send("Token authentification failed\nError: "+err)
+    }
   }
   else
-    res.status(400).send("Specify an id")
+    res.status(403).end()
+  
+
 })
 app.post('/delMetric/', (req: any, res: any)=>{
   const id = req.body.id
@@ -231,50 +275,70 @@ app.post('/delMetric/', (req: any, res: any)=>{
           else
             res.status(200).end()
         })
-    }).catch(error => {console.log(error)})
+    }).catch(error => {res.status(409).send(error)})
   }
   else
     res.status(400).send("Specify an id")
 
 })
 app.post('/upUser/', (req: any, res: any)=>{
-  const {id, email, password} = req.body
-  if(id && email && password)
+  
+  if(req.body.user)
   {
-    //check if the user exist
-    let checkUser =  new Promise(function (success: any, reject: any){
-    UserHd.getUserById(id, (err, result) =>{
-      if(err) reject(err)
-      if(result)
-        success(true)
-      else
-        res.status(409).send("This user does not exist")
-      })
-    })//check if the email we wan't to change is not already used
-    checkUser.then(():any =>{
-        UserHd.getUserByMail(email, (err, result) =>{
-          if(err)
-            res.status(520).send("Error: " + err)
-          if(result && result.id != id)
-          {
-            res.status(409).send("This mail already exists")
-          }
-          else
-          {
-            return checkUser
-          }
-        })//finally update the user
-    }).then(() => {
-        UserHd.updateUser(id, email, password, (err) =>{
-          if (err) 
-            res.status(520).send("Error: " + err)
-          else
-            res.status(200).end()
-        })
-    }).catch(error => {console.log(error)})
+    var {id, email, password} = req.body.user.user
+    var token = req.body.user.token
   }
   else
-    res.status(400).send("Specify a id, email and an password")
+      res.status(400).send("Access denied")
+  try{
+    token = checkToken(token)
+    if(token)
+    {
+      if(id && email && password)
+      {
+        //check if the user exist
+        let checkUser =  new Promise(function (success: any, reject: any){
+        UserHd.getUserById(id, (err, result) =>{
+          if(err) reject(err)
+          if(result)
+            success(true)
+          else
+            res.status(409).send("This user does not exist")
+          })
+        })//check if the email we wan't to change is not already used
+        checkUser.then(():any =>{
+            UserHd.getUserByMail(email, (err, result) =>{
+              if(err)
+                res.status(520).send("Error: " + err)
+              if(result && result.id != id)
+              {
+                res.status(409).send("This mail already exists")
+              }
+              else
+              {
+                return checkUser
+              }
+            })//finally update the user
+        }).then(() => {
+            UserHd.updateUser(id, email, password, (err, result) =>{
+              if (err) 
+                res.status(520).send("Error: " + err)
+              else if(result)
+              {
+                res.json(createToken(result));
+              }
+            })
+        }).catch(error => {res.status(409).send(error)})
+      }
+      else
+        res.status(400).send("Specify a id, email and a password")
+  }
+  else
+    res.end('Access token has expired', 400);
+  }
+  catch(err){
+    res.status(403).send("Token authentification failed\nError: "+err)
+  }
 })
 app.post('/upMetric/', (req: any, res: any)=>{
   const {id, user_id, debt_to, amount} = req.body
@@ -297,7 +361,7 @@ app.post('/upMetric/', (req: any, res: any)=>{
         else
           res.status(200).end()
       })
-    }).catch(error => {console.log(error)})
+    }).catch(error => {res.status(409).send(error)})
   }
   else
     res.status(400).send("Specify an id, user_id, debt_to and an amount")
@@ -306,4 +370,32 @@ app.listen(port, (err: Error) => {
   if (err) throw err
   console.log(`Server is running on http://localhost:${port}`)
 })
+function createToken(result: any):any{
+  var expires = moment().add(1, 'h').valueOf();
+  var token = jwt.encode({
+    iss: result.id,
+    exp: expires
+  }, app.get('jwtTokenSecret'));
+  return({
+    token : token,
+    expires: expires,
+    user: result
+  });
+}
+function checkToken(token: any): boolean | never{
+  if(token)
+  {
+    try {
+      var decoded = jwt.decode(token, app.get('jwtTokenSecret'))
+      if (decoded.exp <= Date.now())
+        return false
+      else 
+        return true
+    } catch (err) {
+      throw err
+    }
+  }
+  return false
+}
+
 

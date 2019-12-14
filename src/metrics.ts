@@ -1,7 +1,7 @@
 import mongoAccess from './mongoAccess'
 
 
-export class Metric {
+export default class Metric {
     private id: String
     private user_id: String
     private debt_to: String
@@ -180,6 +180,28 @@ export class Metric {
         client.close()
       })
     }
+    public deleteUserMetrics(id: String, callback: (err: Error | null) => void) {
+      //connect to mongo
+      const mg = this.mgAccess
+      mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, function(err, client){
+        if (err){
+          console.log("Unable to connect to the server\nError log : "+err+"\n");
+        }
+        else
+        {
+          //find the user specified by its email in the db
+          const db = client.db("project")
+          const collection = db.collection("metrics")
+          collection.deleteMany({user_id : id}, function(err) {
+            if (err) 
+             callback(err)
+            else
+             callback(null)
+            client.close();
+          });
+        }
+     })
+    }
     public deleteMetric(id: String, callback: (err: Error | null) => void) {
       //connect to mongo
       const mg = this.mgAccess
@@ -202,7 +224,7 @@ export class Metric {
           });
         }
      })
-   }
+    }
 
 
 }

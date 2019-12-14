@@ -37,9 +37,19 @@ a {
 
 .user-col {
 	padding-top: 1.85%;
-	padding-left: 7%;
+	padding-left: 1%;
 }
 
+.errorBox{
+	color: rgb(212, 146, 146);
+	font-size: 20px;
+	font-weight: bold;
+}
+.modifBox{
+	color: rgb(146, 212, 151);
+	font-size: 20px;
+	font-weight: bold;
+}
 .add-window {
 	position:relative;
 	margin: 0 auto;

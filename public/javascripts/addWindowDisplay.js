@@ -9,7 +9,7 @@ $(".adder").click((e) => {
 								'<div class="row">'+
 									'<div class="col-sm-6">'+
 										'<div class="form-group">'+
-												'<label for="debt_fav_to">Debt or Favor to:</label>'+
+												'<label for="debt_fav_to">reminder:</label>'+
 												'<input type="text" class="form-control" id="debt_fav_to"'+ 
 												'value="Bublik Ponchikov">'+
 												'<label for="new_amount">Amount (in $):</label>'+
@@ -27,9 +27,10 @@ $(".adder").click((e) => {
 										'</div>'+
 									'</div>'+
 								'</div>'+
+								'<div class="errorBox" id="errorMetricsBox"></div>'+	
 							'</form>'+
-							'<script src="/javascripts/addMetric.js"></script>'
-						'</div>';
+						'</div>'+
+						'<script src="/javascripts/addMetric.js"></script>';
 	$('#add-new-container').html(window_to_append);
 
 });

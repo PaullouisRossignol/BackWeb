@@ -173,7 +173,7 @@ export class UserHandler {
       }
     })
   }
-  public updateUser( user_id: String, email: String, password: String, callback: (err: Error | null) => void){
+  public updateUser( user_id: String, email: String, password: String, callback: (err: Error | null, result: User | null) => void){
     //connect to mongo
     const mg = this.mgAccess
     mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, (err, client) =>{
@@ -189,10 +189,10 @@ export class UserHandler {
         const updateUser = {$set:{email: email, password: password}}
         collection.updateOne({_id : id}, updateUser, (err) => {
             if(err){
-              callback(err);
+              callback(err, null);
             }
             else
-              callback(null);
+              callback(null, User.fromDb(user_id, email, password));
           })
       }
       client.close()
