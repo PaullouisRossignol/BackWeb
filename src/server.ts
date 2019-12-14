@@ -131,20 +131,36 @@ app.get('/getMetrics', (req: any, res: any)  =>{
  })
  
 }
-app.get('/getUserMetrics/:id', (req: any, res: any)  =>{
-  if(req.params.id)
+app.post('/getUserMetrics', (req: any, res: any)  =>{
+  if(req.body.user)
   {
-    MetricHd.getUserMetrics(req.params.id, (err: Error | null, result: any) => {
-      if (err) throw err
-      res.json(result)
-      //to give the response
-      res.end()
-     })
+    var id = req.body.user.user.id
+    var token = req.body.user.token
   }
   else
-    res.status(400).send("Specify an id")
-
-
+      res.status(400).send("Access denied")
+  try{
+    token = checkToken(token)
+    if(token)
+    {
+      if(id)
+      {
+        MetricHd.getUserMetrics(id, (err: Error | null, result: any) => {
+          if (err) 
+            res.status(520).send( err)
+          else
+            res.json(result)
+         })
+      }
+      else
+        res.status(400).send("Specify an id")
+    }
+    else
+      res.end('Access token has expired', 400);
+  }
+  catch(err){
+    res.status(403).send("Token authentification failed\n"+err)
+  }
  })
 app.post('/addUser/', (req: any, res: any)=>{
   const {email, password} = req.body
@@ -229,11 +245,11 @@ app.post('/delUser/', (req: any, res: any)=>{
           checkUser.then(()=>{
               UserHd.deleteUser(id, (err) =>{
                 if (err)
-                  res.status(520).send("Error: " + err)
+                  res.status(520).send( err)
               })
               MetricHd.deleteUserMetrics(id, (err) =>{
                 if (err)
-                    res.status(520).send("Error: " + err)
+                    res.status(520).send( err)
               })
                 
               res.status(200).end()
@@ -271,7 +287,7 @@ app.post('/delMetric/', (req: any, res: any)=>{
     checkMetric.then(()=>{
         MetricHd.deleteMetric(id, (err) =>{
           if (err) 
-            res.status(520).send("Error: " + err)
+            res.status(520).send( err)
           else
             res.status(200).end()
         })
@@ -282,7 +298,7 @@ app.post('/delMetric/', (req: any, res: any)=>{
 
 })
 app.post('/upUser/', (req: any, res: any)=>{
-  
+
   if(req.body.user)
   {
     var {id, email, password} = req.body.user.user
@@ -309,7 +325,7 @@ app.post('/upUser/', (req: any, res: any)=>{
         checkUser.then(():any =>{
             UserHd.getUserByMail(email, (err, result) =>{
               if(err)
-                res.status(520).send("Error: " + err)
+                res.status(520).send( err)
               if(result && result.id != id)
               {
                 res.status(409).send("This mail already exists")
@@ -322,7 +338,7 @@ app.post('/upUser/', (req: any, res: any)=>{
         }).then(() => {
             UserHd.updateUser(id, email, password, (err, result) =>{
               if (err) 
-                res.status(520).send("Error: " + err)
+                res.status(520).send( err)
               else if(result)
               {
                 res.json(createToken(result));
@@ -357,7 +373,7 @@ app.post('/upMetric/', (req: any, res: any)=>{
     checkUser.then(() => {
       MetricHd.updateMetric(id, user_id, debt_to, amount, (err) =>{
         if (err)
-          res.status(520).send("Error: " + err)
+          res.status(520).send( err)
         else
           res.status(200).end()
       })
@@ -395,7 +411,9 @@ function checkToken(token: any): boolean | never{
       throw err
     }
   }
-  return false
+  else
+    throw new Error("access cancelled without a token")
+  
 }
 
 

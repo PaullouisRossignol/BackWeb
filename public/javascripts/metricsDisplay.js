@@ -1,14 +1,17 @@
 function displayMetrics() {
-	id = Cookies.getJSON('user').user.id
-	const url = "/getUserMetrics/"+id
+	userCookies = Cookies.getJSON('user')
+	const url = "/getUserMetrics"
+	const arr = {user: userCookies}
+
 	$.ajax({
 		url: url,
-        method: "GET",
+		method: "POST",
+		data: arr,
         dataType: 'json',
         success: function(data) {
 			var debts_to_append = '';
 			var favors_to_append = '';
-         	
+         	console.log(data)
 			$.each(data, function(i, item) {
 				if(item.amount < 0){
 					debts_to_append +='<form>'+
@@ -74,8 +77,9 @@ function displayMetrics() {
           	$("#debts-container").html(debts_to_append);
           	$("#favors-container").html(favors_to_append);
 		},
-		error: function(){
-			concole.log("Error: "+data);
+		error: function(data){
+			console.log(data)
+			$("#errorGetMetricsBox").html(data.responseText);
 		}
 	});
 }

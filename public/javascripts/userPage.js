@@ -2,6 +2,8 @@
 if(Cookies.get('user'))
 {
     const user = Cookies.getJSON('user')
+    console.log(user)
+
     $('#email').val(user.user.email)
     $('#password').val(user.user.password)
     if(Cookies.get("modifUser"))
