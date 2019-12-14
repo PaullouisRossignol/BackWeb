@@ -13,17 +13,17 @@ $(function() {
 			$.each(data, function(i, item) {
 				if(item.amount < 0){
 					debts_to_append +='<form>'+
-						'<input type="hidden" id="metricId" name="metricId" value="'+item.id+'">'+
+						'<input class="item-id" type="hidden"  name="metricId" value="'+item.id+'">'+
 						'<div class="row">'+
 							'<div class="col-sm-6">'+
 								'<div class="form-group">'+
 										'<label for="deb_user">Debt to:</label>'+
-										'<input type="text" class="form-control" id="debt_user"'+ 
+										'<input type="text" class="form-control" name="debt_user"'+ 
 										'value="'+ 
 										item.debt_to +
 										'">'+
 										'<label for="debt_amount">Debt Amount (in $):</label>'+
-										'<input type="number" class="form-control" id="debt_amount"'+ 
+										'<input type="number" class="form-control" name="debt_amount"'+ 
 										'value="'+
 										item.amount  +
 										'">'+
@@ -45,7 +45,7 @@ $(function() {
 				}
 				else {
 					favors_to_append +='<form>'+
-						'<input type="hidden"  name="metricId" value="'+item.id+'">'+
+						'<input class="item-id" type="hidden"  name="metricId" value="'+item.id+'">'+
 						'<div class="row">'+
 							'<div class="col-sm-6">'+
 								'<div class="form-group">'+
