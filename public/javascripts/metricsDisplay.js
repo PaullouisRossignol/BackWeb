@@ -1,3 +1,4 @@
+
 function displayMetrics() {
 	userCookies = Cookies.getJSON('user')
 	const url = "/getUserMetrics"
@@ -11,7 +12,6 @@ function displayMetrics() {
         success: function(data) {
 			var debts_to_append = '';
 			var favors_to_append = '';
-         	console.log(data)
 			$.each(data, function(i, item) {
 				if(item.amount < 0){
 					debts_to_append +='<form>'+
@@ -33,17 +33,18 @@ function displayMetrics() {
 							'</div>'+
 							'<div class="col-sm-6">'+
 								'<div class="row debt-fav-row">'+
-									'<input type="submit" class="btn log-btn updater" value="Change">'+
+								'<button type="button" onclick="updateMetric(this)" id ='+item.id+' class="btn log-btn">'+
+									'Change'+
+								'</button>'+
 								'</div>'+
 								'<div class="row debt-fav-row">'+
-									'<button class="btn log-btn deleter">'+
+									'<button type="button" onclick="deleteMetric(this)" id ='+item.id+' class="btn log-btn">'+
 										'Close Debt'+
 									'</button>'+
 								'</div>'+
 							'</div>'+
 						'</div>'+
 					'</form>'+
-						'<script src="/javascripts/deleteMetric.js"></script>'+
 						'<script src="/javascripts/updateMetric.js"></script>';
 				}
 				else {
@@ -66,20 +67,21 @@ function displayMetrics() {
 							'</div>'+
 							'<div class="col-sm-6">'+
 								'<div class="row debt-fav-row">'+
-									'<input type="submit" class="btn log-btn updater" value="Change">'+
+									'<button type="button" onclick="updateMetric(this)" id ='+item.id+' class="btn log-btn">'+
+										'Change'+
+									'</button>'+
 								'</div>'+
 								'<div class="row debt-fav-row">'+
-									'<button class="btn log-btn deleter">'+
+								'	<button type="button" onclick="deleteMetric(this)" id ='+item.id+' class="btn log-btn deleter">'+
 										'Close Debt'+
 									'</button>'+
 								'</div>'+
 							'</div>'+
 						'</div>'+
 					'</form>'+
-						'<script src="/javascripts/deleteMetric.js"></script>'+
 						'<script src="/javascripts/updateMetric.js"></script>';
 				}
-         	 });
+			  });
           	$("#debts-container").html(debts_to_append);
           	$("#favors-container").html(favors_to_append);
 		},

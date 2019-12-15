@@ -1,6 +1,5 @@
 //dependancies
 import bodyparser = require('body-parser')
-import session = require('express-session')
 import path = require('path')
 import express = require('express')
 import {UserHandler} from './user'
@@ -156,7 +155,7 @@ app.post('/getUserMetrics', (req: any, res: any)  =>{
         res.status(400).send("Specify an id")
     }
     else
-      res.end('Access token has expired', 400);
+      res.status(400).send('Access token has expired');
   }
   catch(err){
     res.status(403).send("Token authentification failed\n"+err)
@@ -201,7 +200,6 @@ app.post('/addMetric/', (req: any, res: any)=>{
       token = checkToken(token)
       if(token)
       {
-        console.log(req.body)
         if(user_id && debt_to && amount)
         {
           MetricHd.addMetric(user_id, debt_to, amount, (err) =>{
@@ -220,7 +218,7 @@ app.post('/addMetric/', (req: any, res: any)=>{
     }
   }
   else
-      res.end('Access token has expired', 400);
+      res.status(400).send('Access Denied');
 })
 app.post('/delUser/', (req: any, res: any)=>{
   if(req.body.user)
@@ -259,7 +257,7 @@ app.post('/delUser/', (req: any, res: any)=>{
           res.status(400).send("Specify an id")
       }
       else
-        res.end('Access token has expired', 400);
+        res.status(400).send('Access token has expired');
     }
     catch(err){
       res.status(403).send("Token authentification failed\nError: "+err)
@@ -271,31 +269,52 @@ app.post('/delUser/', (req: any, res: any)=>{
 
 })
 app.post('/delMetric/', (req: any, res: any)=>{
-  const id = req.body.id
-  if(id)
+  if(req.body)
   {
-        //check if the Metric exist
-    let checkMetric =  new Promise(function (success: any, reject: any){
-      MetricHd.getMetric(id, (err, result) =>{
-        if(err) reject(err)
-        if(result)
-          success(true)
-        else
-          res.status(409).send("This Metric does not exist")
-      })
-    })//Delete in db
-    checkMetric.then(()=>{
-        MetricHd.deleteMetric(id, (err) =>{
-          if (err) 
-            res.status(520).send( err)
-          else
-            res.status(200).end()
-        })
-    }).catch(error => {res.status(409).send(error)})
+    var id = req.body.id
+    var token = req.body.token
   }
   else
-    res.status(400).send("Specify an id")
-
+    res.status(400).send("Access denied")
+    if(token)
+    {
+      try{
+        token = checkToken(token)
+        if(token)
+        {
+          if(id){
+                //check if the Metric exist
+            let checkMetric =  new Promise(function (success: any, reject: any){
+              MetricHd.getMetric(id, (err, result) =>{
+                if(err) reject(err)
+                if(result)
+                  success(true)
+                else
+                  res.status(409).send("This Metric does not exist")
+              })
+            })//Delete in db
+            checkMetric.then(()=>{
+                MetricHd.deleteMetric(id, (err) =>{
+                  if (err) 
+                    res.status(520).send( err)
+                  else
+                    res.status(200).end()
+                })
+            }).catch(error => {res.status(409).send(error)})
+          }
+          else
+            res.status(400).send("Specify an id")
+        }
+        else
+          res.status(400).send('Access token has expired');
+      }
+      catch(err){
+        res.status(403).send("Token authentification failed\nError: "+err)
+      }
+    }
+    else
+      res.status(400).send("Access denied")
+  
 })
 app.post('/upUser/', (req: any, res: any)=>{
 
@@ -350,38 +369,58 @@ app.post('/upUser/', (req: any, res: any)=>{
         res.status(400).send("Specify a id, email and a password")
   }
   else
-    res.end('Access token has expired', 400);
+    res.status(400).send('Access token has expired');
   }
   catch(err){
     res.status(403).send("Token authentification failed\nError: "+err)
   }
 })
 app.post('/upMetric/', (req: any, res: any)=>{
-  const {id, user_id, debt_to, amount} = req.body
-  if(id && user_id && debt_to && amount)
+  if(req.body)
   {
-    //check if the user exist
-    let checkUser =  new Promise(function (success: any, reject: any){
-      MetricHd.getMetric(id, (err, result) =>{
-        if(err) reject(err)
-        if(result)
-          success(true)
-        else
-          res.status(409).send("This Metric does not exist")
-        })
-    })//update in the db
-    checkUser.then(() => {
-      MetricHd.updateMetric(id, user_id, debt_to, amount, (err) =>{
-        if (err)
-          res.status(520).send( err)
-        else
-          res.status(200).end()
-      })
-    }).catch(error => {res.status(409).send(error)})
+    var {token, id, user_id, debt_to, amount} = req.body
   }
-  else
-    res.status(400).send("Specify an id, user_id, debt_to and an amount")
-})
+  if(token)
+  {
+    try{
+      token = checkToken(token)
+      if(token)
+      {
+        if(id && user_id && debt_to && amount)
+        {
+          //check if the user exist
+          let checkUser =  new Promise(function (success: any, reject: any){
+            MetricHd.getMetric(id, (err, result) =>{
+              if(err) reject(err)
+              if(result)
+                success(true)
+              else
+                res.status(409).send("This Metric does not exist")
+              })
+          })//update in the db
+          checkUser.then(() => {
+            MetricHd.updateMetric(id, user_id, debt_to, amount, (err) =>{
+              if (err)
+                res.status(520).send( err)
+              else
+                res.status(200).end()
+            })
+          }).catch(error => {res.status(409).send(error)})
+        }
+        else
+          res.status(400).send("Specify an id, user_id, debt_to and an amount")
+        }
+        else
+          res.status(400).send('Access token has expired');
+      }
+      catch(err){
+        res.status(403).send("Token authentification failed\nError: "+err)
+      }
+    }
+    else
+      res.status(400).send("Access denied")
+  
+  })
 app.listen(port, (err: Error) => {
   if (err) throw err
   console.log(`Server is running on http://localhost:${port}`)

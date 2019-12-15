@@ -1,23 +1,26 @@
-$(document).off('click').on('click', '.deleter', function(e){
-	//e.preventDefault();
-	const id = $(this).closest('form').children('.item-id').val();
-	//$("body").html('<div>'+id+'</div>');
-	//console.log('id suka:');
-	console.log(id);
-	let arr = {id: id}
+function deleteMetric(button){
+	const id = button.id
+	const debt_to = $("#"+id).closest('form').children('.row')
+	.children('.col-sm-6').children('.form-group').children('.debt_user').val()
+	var conf = confirm("Are you sure you want to delete this metric ?\n=> "+debt_to);
+    if (conf == true) {
+	const userCookies = Cookies.getJSON('user')
+	const token = userCookies.token
+	let arr = {token: token, id: id}
 
 	$.ajax({
 		url:  '/delMetric',
 		type: 'POST',
 		data: JSON.stringify(arr),
-		dataType: 'json',
 		contentType: 'application/json; charset=utf-8',
         async: true,
         success: function() {
-			console.log("done");
+			document.location.reload()
 		},
 		error: function(data, status, error){
-			console.log("error");
+			$("#errorGetMetricsBox").html(data.responseText)
 		}
 	});
-});
+}
+	return false
+}

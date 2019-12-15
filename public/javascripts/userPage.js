@@ -2,7 +2,6 @@
 if(Cookies.get('user'))
 {
     const user = Cookies.getJSON('user')
-    console.log(user)
 
     $('#email').val(user.user.email)
     $('#password').val(user.user.password)
@@ -14,10 +13,20 @@ if(Cookies.get('user'))
         },4000)
         Cookies.remove("modifUser")
     }
+    if(Cookies.get("modifMetric"))
+    {
+        $("#modifMetricBox").html("Your metrics were updated")
+        $("#modifMetricBox").animate({ 
+            'opacity': '0 '
+        },4000)
+        Cookies.remove("modifMetric")
+    }
     displayMetrics()
 }
 else
 {
+    if(Cookies.get("modifMetric"))
+        Cookies.remove("modifMetric")
     if(Cookies.get("modifUser"))
         Cookies.remove("modifUser")
     document.location.href = '/'
@@ -53,7 +62,6 @@ $("#deleteUser").click((e) =>{
     var conf = confirm("Are you sure you want to delete your account ?\n            All your metrics will be deleted");
     if (conf == true) {
     userCookie = Cookies.getJSON("user")
-    console.log(userCookie)
     DeleteUserAjax(userCookie)
     }
 })

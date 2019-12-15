@@ -30,3 +30,7 @@ $("#add_new").click((e)=>{
 	});
 
 });
+ function cancel()
+ {
+	$('#add-new-container').html("")
+ }

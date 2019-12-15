@@ -11,10 +11,10 @@ $(".adder").click((e) => {
 										'<div class="form-group">'+
 												'<label for="debt_fav_to">reminder:</label>'+
 												'<input type="text" class="form-control" id="debt_fav_to"'+ 
-												'value="Bublik Ponchikov">'+
+												'placeholder="key word to remind your due">'+
 												'<label for="new_amount">Amount (in $):</label>'+
 												'<input type="number" class="form-control" id="new_amount"'+ 
-												'value="1">'+
+												'value="1" >'+
 												'<p>Chose one:</p>'+
 												'<input type="radio" name="option_choice" value="1">Debt</input>'+
 												'<br>'+
@@ -23,12 +23,15 @@ $(".adder").click((e) => {
 									'</div>'+
 									'<div class="col-sm-6">'+
 										'<div class="row debt-fav-row">'+
-											'<input type="submit" class="btn log-btn" value="Submit" id="add_new">'+
+											'<input type="submit" onclick="cancel()" class="btn log-btn" value="Cancel" >'+
 										'</div>'+
 									'</div>'+
 								'</div>'+
 								'<div class="errorBox" id="errorMetricsBox"></div>'+	
 							'</form>'+
+							'<button type="button" id="add_new"  class="btn log-btn">'+
+									'Submit'+
+							'</button>'+
 						'</div>'+
 						'<script src="/javascripts/addMetric.js"></script>';
 	$('#add-new-container').html(window_to_append);
