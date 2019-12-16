@@ -131,15 +131,14 @@ app.get('/getMetrics', (req: any, res: any)  =>{
  
 }
 app.post('/getUserMetrics', (req: any, res: any)  =>{
-  if(req.body.user)
+  if(req.body)
   {
-    var id = req.body.user.user.id
-    var token = req.body.user.token
+    var {id, token} = req.body
   }
   else
-      res.status(400).send("Access denied")
+      res.status(400).send("Access denied ")
   try{
-    token = checkToken(token)
+    token = checkToken(token, id)
     if(token)
     {
       if(id)
@@ -154,11 +153,9 @@ app.post('/getUserMetrics', (req: any, res: any)  =>{
       else
         res.status(400).send("Specify an id")
     }
-    else
-      res.status(400).send('Access token has expired');
   }
   catch(err){
-    res.status(403).send("Token authentification failed\n"+err)
+    res.status(403).send(String(err))
   }
  })
 app.post('/addUser/', (req: any, res: any)=>{
@@ -197,7 +194,7 @@ app.post('/addMetric/', (req: any, res: any)=>{
   if(token)
   {
     try{
-      token = checkToken(token)
+      token = checkToken(token, user_id)
       if(token)
       {
         if(user_id && debt_to && amount)
@@ -214,7 +211,7 @@ app.post('/addMetric/', (req: any, res: any)=>{
       }
     }
     catch(err){
-      res.status(403).send("Token authentification failed\nError: "+err)
+      res.status(403).send(String(err))
     }
   }
   else
@@ -226,7 +223,7 @@ app.post('/delUser/', (req: any, res: any)=>{
     const id = req.body.user.id
     var token = req.body.token
     try{
-      token = checkToken(token)
+      token = checkToken(token, id)
       if(token)
       {
         if(id){
@@ -256,11 +253,9 @@ app.post('/delUser/', (req: any, res: any)=>{
         else
           res.status(400).send("Specify an id")
       }
-      else
-        res.status(400).send('Access token has expired');
     }
     catch(err){
-      res.status(403).send("Token authentification failed\nError: "+err)
+      res.status(403).send(String(err))
     }
   }
   else
@@ -271,15 +266,14 @@ app.post('/delUser/', (req: any, res: any)=>{
 app.post('/delMetric/', (req: any, res: any)=>{
   if(req.body)
   {
-    var id = req.body.id
-    var token = req.body.token
+    var {id, user_id, token} = req.body
   }
   else
     res.status(400).send("Access denied")
     if(token)
     {
       try{
-        token = checkToken(token)
+        token = checkToken(token, user_id)
         if(token)
         {
           if(id){
@@ -305,11 +299,9 @@ app.post('/delMetric/', (req: any, res: any)=>{
           else
             res.status(400).send("Specify an id")
         }
-        else
-          res.status(400).send('Access token has expired');
       }
       catch(err){
-        res.status(403).send("Token authentification failed\nError: "+err)
+        res.status(403).send(String(err))
       }
     }
     else
@@ -326,7 +318,7 @@ app.post('/upUser/', (req: any, res: any)=>{
   else
       res.status(400).send("Access denied")
   try{
-    token = checkToken(token)
+    token = checkToken(token, id)
     if(token)
     {
       if(id && email && password)
@@ -367,23 +359,21 @@ app.post('/upUser/', (req: any, res: any)=>{
       }
       else
         res.status(400).send("Specify a id, email and a password")
-  }
-  else
-    res.status(400).send('Access token has expired');
+    }
   }
   catch(err){
-    res.status(403).send("Token authentification failed\nError: "+err)
+    res.status(403).send(String(err))
   }
 })
 app.post('/upMetric/', (req: any, res: any)=>{
-  if(req.body)
+  if(req.body.user)
   {
     var {token, id, user_id, debt_to, amount} = req.body
   }
   if(token)
   {
     try{
-      token = checkToken(token)
+      token = checkToken(token, id)
       if(token)
       {
         if(id && user_id && debt_to && amount)
@@ -410,11 +400,9 @@ app.post('/upMetric/', (req: any, res: any)=>{
         else
           res.status(400).send("Specify an id, user_id, debt_to and an amount")
         }
-        else
-          res.status(400).send('Access token has expired');
       }
       catch(err){
-        res.status(403).send("Token authentification failed\nError: "+err)
+        res.status(403).send(String(err))
       }
     }
     else
@@ -437,21 +425,23 @@ function createToken(result: any):any{
     user: result
   });
 }
-function checkToken(token: any): boolean | never{
+function checkToken(token: any, id: String): boolean | never{
   if(token)
   {
     try {
       var decoded = jwt.decode(token, app.get('jwtTokenSecret'))
       if (decoded.exp <= Date.now())
-        return false
-      else 
+        throw new Error("Access token has expired")
+      else if(decoded.iss != id)
+        throw new Error("Access denied, token does not correspond to this account")
+      else
         return true
     } catch (err) {
       throw err
     }
   }
   else
-    throw new Error("access cancelled without a token")
+    throw new Error("Access denied without a token")
   
 }
 

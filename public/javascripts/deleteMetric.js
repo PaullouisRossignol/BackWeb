@@ -6,8 +6,8 @@ function deleteMetric(button){
     if (conf == true) {
 	const userCookies = Cookies.getJSON('user')
 	const token = userCookies.token
-	let arr = {token: token, id: id}
-
+	const user_id = userCookies.user.id
+	let arr = {token: token, id: id, user_id: user_id}
 	$.ajax({
 		url:  '/delMetric',
 		type: 'POST',
