@@ -1,6 +1,10 @@
  
 if(Cookies.get('user'))
 {
+    $("#scripts").html(
+    "<script src='/javascripts/metricsDisplay.js'></script>"+
+    "<script src='/javascripts/deleteMetric.js'></script>"+
+    "<script src='/javascripts/addWindowDisplay.js'></script>")
     const user = Cookies.getJSON('user')
 
     $('#email').val(user.user.email)

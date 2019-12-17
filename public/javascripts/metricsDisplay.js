@@ -2,14 +2,13 @@
 function displayMetrics() {
 	userCookies = Cookies.getJSON('user')
 	const url = "/getUserMetrics"
-	const userCookies = Cookies.getJSON('user')
 	const id = userCookies.user.id
 	const token = userCookies.token
 	const arr = {token: token, id: id}
 	var debts = 0;
 	var favors = 0;
 	var difference = 0;
-
+	var numId=0;
 	$.ajax({
 		url: url,
 		method: "POST",
@@ -22,7 +21,6 @@ function displayMetrics() {
 				if(item.amount < 0){
 					debts+= Number(item.amount);
 					debts_to_append +='<form>'+
-						'<input class="item-id" type="hidden"  name="metricId" value="'+item.id+'">'+
 						'<div class="row">'+
 							'<div class="col-sm-6">'+
 								'<div class="form-group">'+
@@ -40,12 +38,12 @@ function displayMetrics() {
 							'</div>'+
 							'<div class="col-sm-6">'+
 								'<div class="row debt-fav-row">'+
-								'<button type="button" onclick="updateMetric(this)" id ='+item.id+' class="btn log-btn">'+
+								'<button type="button" onclick="updateMetric(this)" id='+numId+' name ='+item.id+' class="btn log-btn">'+
 									'Change'+
 								'</button>'+
 								'</div>'+
 								'<div class="row debt-fav-row">'+
-									'<button type="button" onclick="deleteMetric(this)" id ='+item.id+' class="btn log-btn">'+
+									'<button type="button" onclick="deleteMetric(this)" id='+numId+' name ='+item.id+' class="btn log-btn">'+
 										'Close Debt'+
 									'</button>'+
 								'</div>'+
@@ -57,7 +55,6 @@ function displayMetrics() {
 				else {
 					favors+= Number(item.amount);	
 					favors_to_append +='<form>'+
-						'<input class="item-id" type="hidden" name="metricId" value="'+item.id+'">'+
 						'<div class="row">'+
 							'<div class="col-sm-6">'+
 								'<div class="form-group">'+
@@ -75,12 +72,12 @@ function displayMetrics() {
 							'</div>'+
 							'<div class="col-sm-6">'+
 								'<div class="row debt-fav-row">'+
-									'<button type="button" onclick="updateMetric(this)" id ='+item.id+' class="btn log-btn">'+
+									'<button type="button" onclick="updateMetric(this)" name ='+item.id+' id='+numId+' class="btn log-btn">'+
 										'Change'+
 									'</button>'+
 								'</div>'+
 								'<div class="row debt-fav-row">'+
-								'	<button type="button" onclick="deleteMetric(this)" id ='+item.id+' class="btn log-btn deleter">'+
+								'	<button type="button" onclick="deleteMetric(this)" name ='+item.id+'id='+numId+' class="btn log-btn deleter">'+
 										'Close Debt'+
 									'</button>'+
 								'</div>'+
@@ -89,6 +86,7 @@ function displayMetrics() {
 					'</form>'+
 						'<script src="/javascripts/updateMetric.js"></script>';
 				}
+				numId++
 			  });
 			//Displaying metrics			
           	$("#debts-container").html(debts_to_append);

@@ -1,10 +1,11 @@
 
 
 function updateMetric(button){
-	const id = button.id
-	const debt_to = $("#"+id).closest('form').children('.row')
+	const id = button.name
+	const buttonId = button.id
+	const debt_to = $("#"+buttonId).closest('form').children('.row')
 	.children('.col-sm-6').children('.form-group').children('.debt_user').val()
-	const amount = $("#"+id).closest('form').children('.row')
+	const amount = $("#"+buttonId).closest('form').children('.row')
 	.children('.col-sm-6').children('.form-group').children('.debt_amount').val();
 
 	if(debt_to !== "" && amount !== "")

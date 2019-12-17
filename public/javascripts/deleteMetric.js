@@ -1,6 +1,8 @@
 function deleteMetric(button){
-	const id = button.id
-	const debt_to = $("#"+id).closest('form').children('.row')
+	const id = button.name
+	const buttonId = button.id
+	console.log(id)
+	const debt_to = $("#"+buttonId).closest('form').children('.row')
 	.children('.col-sm-6').children('.form-group').children('.debt_user').val()
 	var conf = confirm("Are you sure you want to delete this metric ?\n=> "+debt_to);
     if (conf == true) {
