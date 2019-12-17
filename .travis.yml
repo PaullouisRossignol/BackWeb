@@ -1,7 +1,20 @@
 language: node_js
 
 before_script:
-  npm install
+  npm install body-parser
+  npm install encoding-down
+  npm install express
+  npm install jquery
+  npm install jwt-simple
+  npm install moment
+  npm install mongodb
+  npm install nodemon
+  npm install request
+  npm install ts-node
+  npm install typescript
+  npm install mocha
+  npm install chai
+  npm install chai-http
   npm run startDb
 script:
   npm run test
