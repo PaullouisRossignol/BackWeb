@@ -137,7 +137,7 @@ function displayMetrics() {
 						return d;
 					})
 					.attr("y", function(d, i) {
-						return d>svgHeight? svgHeight -282: svgHeight - d - 2;
+						return d>svgHeight? svgHeight -282: svgHeight - d - 4;
 					})
 					.attr("x", function(d, i) {
 						return barWidth * i + 60;
