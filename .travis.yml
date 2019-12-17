@@ -1,0 +1,7 @@
+language: node_js
+
+before_script:
+  npm install
+  npm run startDb
+script:
+  npm run test
