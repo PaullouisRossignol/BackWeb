@@ -52,8 +52,6 @@ Run `npm test` to execute the testing part
 |-----|-----------|----------|
 |*GET*: `/`|Welcome Page||
 |*GET*: `/userPage`|User Page|`user_id`|
-|*GET*: `/getUsers`|Returns the list of all users from the DB||
-|*GET*: `/getMetrics`|Retruns the list of all metrics from the DB||
 |*POST*: `/getUserMetrics`|Returns the metrics of a concrete user|`user_id`|
 |*POST*: `/connectUser`|Connects user from the database|`email/password`|
 |*POST*: `/addUser`|Adds User into the database|`email/password`|
