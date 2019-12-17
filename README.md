@@ -49,4 +49,9 @@ Run `npm test` to execute the testing part
 
 |Route|Description|Parameters|
 |-----|-----------|----------|
-|*GET*: `/`|||
+|*GET*: `/`|Welcome Page||
+|*GET*: `/userPage`|User Page|`user_id`|
+|*GET*: `/getUsers`|Returns the list of all users from the DB||
+|*GET*: `/getMetrics`|Retruns the list of all metrics from the DB||
+|*GET*: `/getUserMetrics`|Returns the metrics of a concrete user|`user_id`|
+|**|||
