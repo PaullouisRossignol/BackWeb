@@ -9,6 +9,8 @@ The project is developed with use of:
 	
 	- TypeScript
 	
+	- ExpressJS
+	
 	- Bootstrap v3
 
 	- MongoDB
