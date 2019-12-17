@@ -11,8 +11,38 @@ The project is developed with use of:
 	
 	- Bootstrap v3
 
+	- MongoDB
+
+	- Mocha and Chai for testing 
+
 Made by Artemii Lazovskii and Paul-Louis Rossignol
 
 # Requirements
 
-U need this list of utilities to be installed on your computer in order to run this project:
+You need this list of utilities to be installed on your computer in order to run this project:
+
+*`npm`*
+*`docker`*
+*`git`*
+
+# Installation 
+
+Clone or download https://github.com/PaullouisRossignol/ProjetBackWeb
+
+Go into the folder containing the project and run `npm init`
+
+# Running the project
+
+## Launching
+
+Than run `npm run startDB` in order to launch the MongoDB database under the docker.
+
+Finally run `npm start` and go to the `localhost:8080`
+
+That's it, now you are able to test out the project.
+
+## Testing
+
+Run `npm test` to execute testing part
+
+
