@@ -21,11 +21,11 @@ Made by Artemii Lazovskii and Paul-Louis Rossignol
 
 You need this list of utilities to be installed on your computer in order to run this project:
 
-*`npm`*
+`npm` v6.13.1
 
-*`docker`*
+`docker` v19.03.5
 
-*`git`*
+`git`
 
 # Installation 
 
