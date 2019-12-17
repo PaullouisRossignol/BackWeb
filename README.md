@@ -22,7 +22,9 @@ Made by Artemii Lazovskii and Paul-Louis Rossignol
 You need this list of utilities to be installed on your computer in order to run this project:
 
 *`npm`*
+
 *`docker`*
+
 *`git`*
 
 # Installation 
@@ -35,14 +37,16 @@ Go into the folder containing the project and run `npm init`
 
 ## Launching
 
-Than run `npm run startDB` in order to launch the MongoDB database under the docker.
+Run `npm run startDB` in order to launch the MongoDB database under the docker.
 
-Finally run `npm start` and go to the `localhost:8080`
+Run `npm start` and go to the `localhost:8080` in your web browser.
 
 That's it, now you are able to test out the project.
 
 ## Testing
 
-Run `npm test` to execute testing part
+Run `npm test` to execute the testing part
 
-
+|Route|Description|Parameters|
+|-----|-----------|----------|
+|*GET*: `/`|||
