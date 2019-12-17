@@ -5,6 +5,7 @@ db.users.insert({email:"pl@123", password:"123"});
 db.users.insert({email:"artemi@123", password:"123"});
 db.users.insert({email:"CarmenSandiego@redHat.fr", password:"123"}); 
 db.users.insert({email:"Neill@Blomkamp.za", password:"123"});
+db.users.insert({email:"test@user", password:"123"});
 
 //get ids to make a foreign key && populate with some metrics
 

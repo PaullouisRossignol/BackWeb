@@ -1,9 +1,13 @@
 import {expect} from 'chai'
-import app = require("../src/server");
-import chai = require("chai");
-import chaiHttp = require("chai-http");
+import {app, server} from "../src/server"
+import chai = require("chai")
+import chaiHttp = require("chai-http")
+import request = require('request')
+chai.use(chaiHttp)
+var token: string
+var user_id: string
+var other_user_id: string
 
-chai.use(chaiHttp);
 
 
 describe('Insert Metrics unlogged', ()=>{
@@ -19,9 +23,9 @@ describe('Insert Metrics unlogged', ()=>{
               }
             )
       .end((err, res) => {
-        expect(res).to.have.status(403);
-        expect(res.text).to.equals("Access denied");
-        done();
+        expect(res).to.have.status(400)
+        expect(res.text).to.equals("Access denied")
+        done()
       })
   })
 })
@@ -41,9 +45,9 @@ describe('Insert with an invalid token', ()=>{
               }
             )
       .end((err, res) => {
-        expect(res).to.have.status(403);
-        expect(res.text).to.equals("Token authentification failed\nError: Signature verification failed");
-        done();
+        expect(res).to.have.status(403)
+        expect(res.text).to.equals("Error: Signature verification failed")
+        done()
       })
   })
 })
@@ -54,21 +58,14 @@ describe('Reading metrics unlogged', ()=>{
       .post("/getUserMetrics")
       .send(
               {
-                user: 
-                  {
-                    user: 
-                      {
-                        id: "5df3c16fb474217307ab6c4f",
-                        password: "123",
-                        email: "pl@123"
-                      }
-                    }
+                id: "5df3c16fb474217307ab6c4f",
+                email: "pl@123"
               }
             )
       .end((err, res) => {
-        expect(res).to.have.status(403);
-        expect(res.text).to.equals("Access denied");
-        done();
+        expect(res).to.have.status(403)
+        expect(res.text).to.equals("Error: Access denied without a token")
+        done()
       })
   })
 })
@@ -83,9 +80,9 @@ describe('Insert a user with missing informations', ()=>{
               }
             )
       .end((err, res) => {
-        expect(res).to.have.status(400);
-        expect(res.text).to.equals("Specify an email and a password");
-        done();
+        expect(res).to.have.status(400)
+        expect(res.text).to.equals("Specify an email and a password")
+        done()
       })
   })
   it('should return an error because no password passed',(done)=>{
@@ -98,52 +95,77 @@ describe('Insert a user with missing informations', ()=>{
               }
             )
       .end((err, res) => {
-        expect(res).to.have.status(400);
-        expect(res.text).to.equals("Specify an email and a password");
-        done();
+        expect(res).to.have.status(400)
+        expect(res.text).to.equals("Specify an email and a password")
+        done()
       })
   })
 })
 describe('Insert a metric with missing informations', ()=>{  
-  it('should return an error because no reminder passed',(done)=>{
-    chai
-      .request(app)
-      .post("/addMetric")
-      .send(
-              {
-                token: "ADMINTOKEN151220192020",
-                amount: "123",
-                user_id: "5df3c16fb474217307ab6c4f"
-              }
-            )
-      .end((err, res) => {
-        expect(res).to.have.status(400);
-        expect(res.text).to.equals("Specify a reminder and an amount");
-        done();
-      })
+  before((done)=>{
+    request.post('http://localhost:8080/connectUser', {form:{email: "test@user",password: "123"}}, (err, res, body) => {
+    if (err) { console.log(err + res); stopTests() }
+      if(res){
+        const result =  JSON.parse(res.body)
+        token = result.token
+        user_id = result.user.id
+        done()
+      }
+      else return null 
+    })
   })
-  it('should return an error because no password passed',(done)=>{
+  it('should return an error because no amount is passed',(done)=>{
     chai
       .request(app)
       .post("/addMetric")
       .send(
             {
-              token: "ADMINTOKEN151220192020",
+              token: token ,
               debt_to: "toto",
-              user_id: "5df3c16fb474217307ab6c4f"
+              user_id: user_id
             }
           )
       .end((err, res) => {
-        expect(res).to.have.status(400);
-        expect(res.text).to.equals("Specify a reminder and an amount");
-        done();
-        stopTests()
+        expect(res).to.have.status(400)
+        expect(res.text).to.equals("Specify a reminder and an amount")
+        done()
       })
+  })
+
+})
+describe('login and try reading someone else s metrics', ()=>{
+  before((done)=>{
+    request.post('http://localhost:8080/connectUser', {form:{email: "pl@123",password: "123"}}, (err, res, body) => {
+    if (err) { console.log(err + res); stopTests() }
+      if(res){
+        const result =  JSON.parse(res.body)
+        other_user_id = result.user.id
+        done()
+      }
+      else return null 
+    })
+  })
+  it('should send an error saying: "Access denied, token does not correspond to this account"', (done)=>{
+    chai
+    .request(app)
+    .post("/getUserMetrics")
+    .send(
+          {
+            token: token,
+            id: other_user_id
+          }
+        )
+    .end((err, res) => {
+      expect(res).to.have.status(403)
+      expect(res.text).to.equals("Error: Access denied, token does not correspond to this account")
+      done()
+      stopTests()
+    })
   })
 })
 
 function stopTests()
 {
-  process.exit(0)
+  server.close()
 }
 

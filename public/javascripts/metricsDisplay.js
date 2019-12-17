@@ -158,6 +158,12 @@ function displayMetrics() {
 		},
 		error: function(data, status, error){
 			$("#errorGetMetricsBox").html(data.responseText );
+			if(data.responseText == "Access token has expired")
+			{
+				alert("Access token has expired\nExiting session")
+				Cookies.remove('user')
+    			document.location.href = '/'
+			}
 		}
 	});
 }

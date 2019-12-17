@@ -141,8 +141,6 @@ app.post('/getUserMetrics', (req: any, res: any)  =>{
     token = checkToken(token, id)
     if(token)
     {
-      if(id)
-      {
         if(id)
         {
           MetricHd.getUserMetrics(id, (err: Error | null, result: any) => {
@@ -154,18 +152,15 @@ app.post('/getUserMetrics', (req: any, res: any)  =>{
         }
         else
           res.status(400).send("Specify an id")
-      }
-      else
-        res.status(403).send('Access token has expired');
     }
     else
-      res.status(400).send('Access Denied')
+      res.status(400).send('Access denied')
   }
   catch(err){
     res.status(403).send(String(err))
   }
  })
-app.post('/addUser/', (req: any, res: any)=>{
+app.post('/addUser', (req: any, res: any)=>{
   const {email, password} = req.body
   if(email && password)
     {
@@ -223,7 +218,7 @@ app.post('/addMetric/', (req: any, res: any)=>{
     }
   }
   else
-      res.status(400).send('Access Denied');
+      res.status(400).send('Access denied');
 })
 app.post('/delUser/', (req: any, res: any)=>{
   if(req.body.user)
@@ -268,7 +263,7 @@ app.post('/delUser/', (req: any, res: any)=>{
             res.status(400).send("Specify an id")
         }
         else
-          res.status(400).send('Access Denied');
+          res.status(400).send('Access denied');
     }
     catch(err){
       res.status(403).send(String(err))
@@ -402,7 +397,7 @@ app.post('/upMetric/', (req: any, res: any)=>{
       res.status(400).send("Access denied")
   
   })
-app.listen(port, (err: Error) => {
+let server = app.listen(port, (err: Error) => {
   if (err) throw err
   console.log(`Server is running on http://localhost:${port}`)
 })
@@ -421,9 +416,6 @@ function createToken(result: any):any{
 function checkToken(token: any, id: String): boolean | never{
   if(token)
   {
-    //token for Admin access
-    if(token == "ADMINTOKEN151220192020")
-      return true
     try {
       var decoded = jwt.decode(token, app.get('jwtTokenSecret'))
 
@@ -442,4 +434,4 @@ function checkToken(token: any, id: String): boolean | never{
   
 }
 
-module.exports = app
+export {app, server}
