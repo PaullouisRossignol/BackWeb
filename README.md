@@ -1,5 +1,5 @@
 # Description
-This project makes part of our academic cours. It is mostly destined to demonstrate the backend management of the website.
+This project makes part of our academic cours. It is mostly destined to demonstrate the backend management CRUD of the website.
 
 The project is developed with use of: 
 	
