@@ -47,11 +47,19 @@ That's it, now you are able to test out the project.
 
 Run `npm test` to execute the testing part
 
+# Routing
 |Route|Description|Parameters|
 |-----|-----------|----------|
 |*GET*: `/`|Welcome Page||
 |*GET*: `/userPage`|User Page|`user_id`|
 |*GET*: `/getUsers`|Returns the list of all users from the DB||
 |*GET*: `/getMetrics`|Retruns the list of all metrics from the DB||
-|*GET*: `/getUserMetrics`|Returns the metrics of a concrete user|`user_id`|
-|**|||
+|*POST*: `/getUserMetrics`|Returns the metrics of a concrete user|`user_id`|
+|*POST*: `/connectUser`|Connects user from the database|`email/password`|
+|*POST*: `/addUser`|Adds User into the database|`email/password`|
+|*POST*: `/addMetric`|Adds metric to the database|`user_id/debts_descrtiption/amount`|
+|*POST*: `/delUser`|Deletes user and its metrics from the database|`user_id`|
+|*POST*: `/delMetric`|Deletes a concrete metric from the database|`metric_id`|
+|*POST*: `/upUser`|Updates user info|`user_id/email/password`|
+|*POST*: `/upMetric`|Updates a concrete metric|`metric_id`|
+
