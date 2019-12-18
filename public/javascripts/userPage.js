@@ -41,7 +41,6 @@ $("#changeEmail").click((e) =>{
     e.preventDefault()
     const email = $("#email").val()
     userCookie = Cookies.getJSON("user")
-    
     if (email != "" && email != userCookie.user.email)
     {
         userCookie.user.email = email
@@ -82,11 +81,14 @@ function UpdateUserAjax(arr){
         contentType: 'application/json; charset=utf-8',
         async: true,
         success: function(data) {
+            console.log("aie")
             Cookies.set('user', JSON.stringify(data))
             Cookies.set("modifUser", true)
             document.location.reload();
         },
         error: function(data){
+            console.log("aie")
+
             $("#errorUserBox").html(data.responseText)
             if(Cookies.get("modifUser"))
                 Cookies.remove("modifUser")

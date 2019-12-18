@@ -140,6 +140,36 @@ export class UserHandler {
       }
     })
   }
+  public checkUniqueMail(email: String, callback: (err: Error | null, result?: User | null) => void){
+    //connect to mongo
+    const mg = this.mgAccess
+    mg.getClient().connect(mg.getUrl(), {useUnifiedTopology: true}, function(err, client){
+      if (err){
+        console.log("Unable to connect to the server\nError log : "+err+"\n");
+      }
+      else
+      {
+        //find the user specified by its email in the db
+        const db = client.db("project")
+        const collection = db.collection("users")
+        const query = { email: email };
+        collection.find(query, function(err: Error, result: any){
+          if(err){
+            callback(err, null);
+          }
+          if(result){
+            result.forEach(element => {
+              if(element.email === email)
+                callback(null, User.fromDb(result._id, result.email, result.password))
+            })
+          }
+          else
+            callback(null, null);
+        });
+        client.close();
+      }
+    })
+  }
   public getUserById(id: String, callback: (err: Error | null, result?: User | null) => void) {
     //connect to mongo
     const mg = this.mgAccess

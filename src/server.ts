@@ -62,74 +62,6 @@ app.get('/getUsers', (req: any, res: any)  =>{
     res.end(200)
    })
  })
-{
- /*
-  app.get('/getUserByMail/:email', (req: any, res: any)  =>{
-    if(req.params.email)
-    {
-      UserHd.getUserByMail(req.params.email, (err: Error | null, result: any) => {
-        if (err) throw err
-        res.json(result)
-        //to give the response
-        res.end()
-      })
-    }
-    else
-      res.status(400).send("Specify an email")
-    
-  })
-  app.get('/getUserById/:id', (req: any, res: any)  =>{
-    if(req.params.id)
-    {
-      UserHd.getUserById(req.params.id, (err: Error | null, result: any) => {
-      if (err) throw err
-      res.json(result)
-      //to give the response
-      res.end()
-      })
-    }
-    else
-      res.status(400).send("Specify an id")
-  })
-  app.get('/getMetric/:id', (req: any, res: any)  =>{
-    if(req.params.id)
-    {
-      MetricHd.getMetric(req.params.id, (err: Error | null, result: any) => {
-      if (err) throw err
-      res.json(result)
-      //to give the response
-      res.end()
-      })
-    }
-    else
-      res.status(400).send("Specify an id")
-  })
-
-  app.post('/delUserMetrics/', (req: any, res: any)=>{
-  const {id} = req.body
-  if(id)
-  {
-    MetricHd.deleteUserMetrics(id, (err) =>{
-      if (err) 
-        res.status(520).send("Erreur ,\n " + err)
-      else
-        res.status(200).end()
-    })
-  }
-  else
-    res.status(400).send("Specify an id")
-})
-*/
-app.get('/getMetrics', (req: any, res: any)  =>{
-  MetricHd.getMetrics((err: Error | null, result: any) => {
-    if (err) throw err
-    res.json(result)
-    //to give the response
-    res.end(200)
-   })
- })
- 
-}
 app.post('/getUserMetrics', (req: any, res: any)  =>{
   if(req.body)
   {
@@ -145,7 +77,7 @@ app.post('/getUserMetrics', (req: any, res: any)  =>{
         {
           MetricHd.getUserMetrics(id, (err: Error | null, result: any) => {
             if (err) 
-              res.status(520).send( err)
+              res.status(520).send(String(err))
             else
               res.json(result)
           })
@@ -186,7 +118,7 @@ app.post('/addUser', (req: any, res: any)=>{
             }
           }
         })
-      }).catch(error => {res.status(409).send(error)})
+      }).catch(error => {res.status(409).send(String(error))})
   }
   else
     res.status(400).send("Specify an email and a password")
@@ -243,21 +175,21 @@ app.post('/delUser/', (req: any, res: any)=>{
           checkUser.then(()=>{
               UserHd.deleteUser(id, (err) =>{
                 if (err)
-                  res.status(520).send( err)
+                  res.status(520).send(String(err))
               })
             })//delete in db
             checkUser.then(()=>{
                 UserHd.deleteUser(id, (err) =>{
                   if (err)
-                    res.status(520).send( err)
+                    res.status(520).send(String(err))
                 })
                 MetricHd.deleteUserMetrics(id, (err) =>{
                   if (err)
-                      res.status(520).send( err)
+                      res.status(520).send(String(err))
                 })
                   
                 res.status(200).end()
-            }).catch(error => {res.status(409).send(error)})
+            }).catch(error => {res.status(409).send(String(error))})
           }
           else
             res.status(400).send("Specify an id")
@@ -301,11 +233,11 @@ app.post('/delMetric/', (req: any, res: any)=>{
             checkMetric.then(()=>{
                 MetricHd.deleteMetric(id, (err) =>{
                   if (err) 
-                    res.status(520).send( err)
+                    res.status(520).send(String(err))
                   else
                     res.status(200).end()
                 })
-            }).catch(error => {res.status(409).send(error)})
+            }).catch(error => {res.status(409).send(String(error))})
           }
           else
             res.status(400).send("Specify an id")
@@ -332,22 +264,65 @@ app.post('/upUser/', (req: any, res: any)=>{
     token = checkToken(token, id)
     if(token)
     {
-        if(id && email && password)
-        {
-          //check if the user exist
-          let checkUser =  new Promise(function (success: any, reject: any){
-          UserHd.getUserById(id, (err, result) =>{
-            if(err) reject(err)
-            if(result)
-              success(true)
-            else
-              res.status(409).send("This user does not exist")
+      if(id && email && password)
+      {
+        //check if the user exist
+        new Promise(function (success: any, reject: any){
+        UserHd.getUserById(id, (err, result) =>{
+          if(err) reject(err)
+          if(result)
+            success(true)
+          else
+            res.status(409).send("This user does not exist")
+          })
+        }).then((success):any =>{
+          if(success)
+          {
+            return new Promise((success, reject)=>{
+              UserHd.getUserByMail(email, (err, result) =>{
+                if(err)
+                {
+                  res.status(520).send(String(err))
+                  success(false)
+                }
+                else if(result)
+                {
+                  if(result.id != id)
+                  {
+                    res.status(409).send("This mail already exists")
+                    success(false)
+                  }
+                  else
+                    success(true)
+                  
+                }
+                else
+                  success(true)
+              })
             })
-        }).catch(error => {res.status(409).send(error)})
+          }
+          //finally update the user
+        }).then((success) => {
+          if(success)
+          {
+            UserHd.updateUser(id, email, password, (err, result) =>{
+              if (err) 
+                res.status(520).send( String(err))
+              else if(result)
+                res.json(createToken(result))
+            })
+          }
+        }).catch(error => 
+          {
+            if(error != "stop")
+              res.status(409).send(String(error));
+          })
       }
       else
         res.status(400).send("Specify a id, email and a password")
-    }
+  }
+  else
+    res.end('Access token has expired', 400);
   }
   catch(err){
     res.status(403).send(String(err))
@@ -358,6 +333,7 @@ app.post('/upMetric/', (req: any, res: any)=>{
   {
     var {token, id, user_id, debt_to, amount} = req.body
   }
+
   if(token)
   {
     try{
@@ -379,11 +355,11 @@ app.post('/upMetric/', (req: any, res: any)=>{
           checkUser.then(() => {
             MetricHd.updateMetric(id, user_id, debt_to, amount, (err) =>{
               if (err)
-                res.status(520).send( err)
+                res.status(520).send(String(err))
               else
                 res.status(200).end()
             })
-          }).catch(error => {res.status(409).send(error)})
+          }).catch(error => {res.status(409).send(String(error))})
         }
         else
           res.status(400).send("Specify an id, user_id, debt_to and an amount")
