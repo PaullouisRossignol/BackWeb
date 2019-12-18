@@ -13,16 +13,10 @@ jobs:
   include:
   - stage: build
     script: npm run build
-  - stage: docker
-    script: npm run startDb
-  - stage: stop_docker
-    script: npm run stopDb
   - stage: test
-    script: npm run test
+    script: npm run startDb && npm run test
 
 stages:
   - build
-  - docker
   - test
-  - stop_docker
 
