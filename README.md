@@ -67,6 +67,10 @@ To delete all the mongoDB files and directories, you can use command `npm run rm
 To reinitialse the database, docker container must be up. Use command `npm run reinitDb` and you'll have a fresh new container replacing the old one. 
 (Your password authorisation will be requiered as mongo files are protected and need administrator permissions to be deleted)
 
+## Logging in
+
+You can use pl@123 or artemi@123 to log in with password `123`. Those are set by default.
+
 # Routing
 |Route|Description|Parameters|
 |-----|-----------|----------|
