@@ -8,7 +8,7 @@ a {
 }
 
 .bg-1 { 
-	background-image: url("Money.jpg");
+	background-image: url("../images/Money.jpg");
 	background-repeat: no-repeat;
 	color: #aaaaaa;
 }

@@ -72,13 +72,13 @@ function displayMetrics() {
 							'</div>'+
 							'<div class="col-sm-6">'+
 								'<div class="row debt-fav-row">'+
-									'<button type="button" onclick="updateMetric(this)" name ='+item.id+' id='+numId+' class="btn log-btn">'+
+									'<button type="button" onclick="updateMetric(this)" id='+numId+' name ='+item.id+' class="btn log-btn">'+
 										'Change'+
 									'</button>'+
 								'</div>'+
 								'<div class="row debt-fav-row">'+
-								'	<button type="button" onclick="deleteMetric(this)" name ='+item.id+'id='+numId+' class="btn log-btn deleter">'+
-										'Close Debt'+
+								'	<button type="button" onclick="deleteMetric(this)" id='+numId+' name ='+item.id+' class="btn log-btn deleter">'+
+										'Close Favor'+
 									'</button>'+
 								'</div>'+
 							'</div>'+
