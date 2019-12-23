@@ -55,19 +55,22 @@ That's it, now you are able to test out the project.
 RYM is a little service which aims to help you remembering your debts & favors.
 When you are at the home page, you can either create a new account or connect to those default accounts:
  - `pl@123` or `artemi@123` to log in with password `123`.
- ![image](public/images/welcomePageRym.png)<center><span style=" font-size:10px;"> login Page</span></center>  
+ 
+ ![image](public/images/welcomePageRym.png) 
+ Login Page  
 
 You can now access your user page.
 There, you can modify your account, using each 'Change' button to update each Line field.
-Carefull with the <span style=" color:red">red button</span>: it shows a confirm box to delete your account ! (and all your metrics stored by the way).
-The <span style=" color:rgb(241, 205, 0)">yellow </span>button logs you out.
+Carefull with the red button: it shows a confirm box to delete your account ! (and all your metrics stored by the way).
+The yellow button logs you out.
 
 You're metrics are displayed underneath. You can update them, using the button 'Change'.
 The 'close Debt/Favor' button show a confirm box to confirm you want to delete the metric.
- ![image](public/images/userPageRym_1.png)<center><span style=" font-size:10px;"> User page top</span></center> 
+ ![image](public/images/userPageRym_1.png) User page top  
+
 Button 'Add Debt/Favor' display a new window at the botton. You can use button 'Cancel' to remove this window. 
 At the bottom of the page, A little summary of your account is displayed throught a bar chart and a number representing the addition of all your metrics.
- ![image](public/images/userPageRym_2.png)<center><span style=" font-size:10px;"> User page bottom</span></center>
+ ![image](public/images/userPageRym_2.png) User page bottom    
 >**Note #1:** Either if some problem occured or you successfully update your metrics/account: Little success/error messages should appear on the page. If no message is displayed, it means that nothing have changed!
 
 >**Note #2:** The way we handle favors & debts could sound a little bit strange: If you create/update the amount of a **debt** and make it **positive**, it will be displayed as a **favor** ! (and vice versa) 
